@@ -14,20 +14,103 @@ function App() {
   const [score, setScore] = useState(0);
   const [isSuccess, setIsSuccess] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [activeLetterBoxIndex, setActiveLetterBoxIndex] = useState<number | null>(null);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [shakeKey, setShakeKey] = useState(0); // Animasyonu tetiklemek için kullanılacak
+  const [showCloseGuess, setShowCloseGuess] = useState(false);
+  const [closeGuessMessage, setCloseGuessMessage] = useState(''); // Bu state artık kullanılmayacak, tek alertMessage kullanacağız.
+  const [correctGuessAnimationKey, setCorrectGuessAnimationKey] = useState(0); // Doğru tahmin animasyonu için
 
   useEffect(() => {
     initializeGame();
   }, [currentWord]);
 
   const initializeGame = () => {
-    const states: LetterState[] = currentWord.word.split('').map(letter => ({
-      letter,
-      revealed: false
+    const states: LetterState[] = currentWord.word.split('').map(char => ({
+      letter: '', // Kullanıcının girdiği harf başlangıçta boş
+      correctLetter: char.toUpperCase(), // Orijinal harf
+      revealed: false,
+      isInvalid: false,
+      isCorrect: false
     }));
     setLetterStates(states);
     setGuess('');
     setIsSuccess(false);
     setShowSuccess(false);
+  };
+
+  const handleLetterBoxClick = (index: number) => {
+    setActiveLetterBoxIndex(index);
+    // Tıklanan kutudaki invalid durumunu sıfırla
+    const newLetterStates = [...letterStates];
+    if (newLetterStates[index]) {
+      newLetterStates[index].isInvalid = false;
+    }
+    setLetterStates(newLetterStates);
+  };
+
+  const handleLetterBoxChange = (index: number, newLetter: string) => {
+    const newLetterStates = [...letterStates];
+    if (newLetterStates[index]) {
+      newLetterStates[index].letter = newLetter;
+    }
+    setLetterStates(newLetterStates);
+  };
+
+  const handleLetterBoxBlur = (index: number, currentLetter: string) => {
+    const newLetterStates = [...letterStates];
+    const correctLetterOfBox = newLetterStates[index].correctLetter;
+
+    if (newLetterStates[index]) {
+      if (currentLetter !== '' && !/^[a-zA-Z]$/.test(currentLetter)) {
+        setAlertMessage('Lütfen sadece harf girin.');
+        setShowAlert(true);
+        setShakeKey(prev => prev + 1); // Animasyonu tetikle
+        setTimeout(() => setShowAlert(false), 2000);
+
+        newLetterStates[index].isInvalid = true;
+        newLetterStates[index].letter = ''; // Yanlış giriş olursa kutu içeriğini sil
+        newLetterStates[index].revealed = false;
+        newLetterStates[index].isCorrect = false;
+      } else if (currentLetter === '') {
+        newLetterStates[index].letter = '';
+        newLetterStates[index].revealed = false;
+        newLetterStates[index].isInvalid = false;
+        newLetterStates[index].isCorrect = false;
+      } else if (currentLetter === correctLetterOfBox) {
+        // Doğru harf girildiğinde
+        newLetterStates[index].letter = currentLetter; // Kullanıcının girdiği doğru harfi kaydet
+        newLetterStates[index].isInvalid = false;
+        newLetterStates[index].isCorrect = true;
+        newLetterStates[index].revealed = true; // Doğru harf girildiğinde açığa çıksın
+
+        setAlertMessage('Doğru harf! Kelimeyi bulmaya çok yaklaştın.'); // Birleşik bildirim
+        setShowAlert(true);
+        setCorrectGuessAnimationKey(prev => prev + 1); // Yeni animasyonu tetikle
+        setTimeout(() => setShowAlert(false), 3000); // Daha uzun süreli bildirim
+
+        const allCorrect = newLetterStates.every(state => state.isCorrect || state.revealed);
+        if (allCorrect) {
+          setAlertMessage('Tebrikler! Kelimeyi doğru tahmin ettin!'); // Oyun bitiş bildirimi
+          setShowAlert(true);
+          // Burada ekstra bir bitiş animasyonu veya yönlendirme olabilir.
+        }
+
+      } else {
+        // Yanlış harf girildiğinde
+        setAlertMessage('Yanlış harf!');
+        setShowAlert(true);
+        setShakeKey(prev => prev + 1);
+        setTimeout(() => setShowAlert(false), 2000);
+
+        newLetterStates[index].isInvalid = true;
+        newLetterStates[index].letter = ''; // Yanlış giriş olursa kutu içeriğini sil
+        newLetterStates[index].revealed = false;
+        newLetterStates[index].isCorrect = false;
+      }
+      setLetterStates(newLetterStates);
+    }
   };
 
   const handleHint = () => {
@@ -39,6 +122,7 @@ function App() {
       const randomIndex = hiddenIndices[Math.floor(Math.random() * hiddenIndices.length)];
       const newStates = [...letterStates];
       newStates[randomIndex].revealed = true;
+      newStates[randomIndex].letter = newStates[randomIndex].correctLetter; // Harfi açığa çıkar
       setLetterStates(newStates);
     }
   };
@@ -57,6 +141,12 @@ function App() {
       setTimeout(() => {
         setShowSuccess(false);
       }, 3000);
+    } else {
+      // Yanlış tahmin yapıldığında
+      setAlertMessage('Yanlış tahmin! Tekrar dene.');
+      setShowAlert(true);
+      setShakeKey(prev => prev + 1); // Tüm kutuları sallamak için tetikle
+      setTimeout(() => setShowAlert(false), 2000);
     }
     setGuess('');
   };
@@ -70,6 +160,7 @@ function App() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white flex items-center justify-center p-4">
       <SuccessMessage show={showSuccess} />
+      <AlertMessage show={showAlert} message={alertMessage} />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -105,7 +196,7 @@ function App() {
             <p className="text-xl sm:text-2xl font-medium text-blue-300">{currentWord.hint}</p>
           </div>
 
-          <div className="flex flex-wrap justify-center gap-3 mb-8">
+          <div className="flex flex-nowrap justify-center gap-3 mb-8">
             {letterStates.map((state, index) => (
               <LetterBox
                 key={index}
@@ -113,6 +204,13 @@ function App() {
                 revealed={state.revealed}
                 index={index}
                 isSuccess={isSuccess}
+                onClick={handleLetterBoxClick}
+                onLetterChange={handleLetterBoxChange}
+                isActive={activeLetterBoxIndex === index}
+                onBlur={handleLetterBoxBlur}
+                isInvalid={state.isInvalid}
+                isCorrect={state.isCorrect}
+                shakeKey={shakeKey}
               />
             ))}
           </div>
@@ -185,3 +283,24 @@ function App() {
 }
 
 export default App;
+
+interface AlertMessageProps {
+  show: boolean;
+  message: string;
+}
+
+const AlertMessage = ({ show, message }: AlertMessageProps) => {
+  const isCloseGuess = message.includes('Kelimeyi bulmaya çok yaklaştın') || message.includes('Tebrikler!');
+  const bgColor = isCloseGuess ? 'bg-green-600' : 'bg-red-600';
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -50 }}
+      animate={show ? { opacity: 1, y: 0 } : { opacity: 0, y: -50 }}
+      transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+      className={`fixed top-5 left-1/2 -translate-x-1/2 ${bgColor} text-white px-6 py-3 rounded-lg shadow-xl z-50 text-lg font-semibold`}
+    >
+      {message}
+    </motion.div>
+  );
+};
