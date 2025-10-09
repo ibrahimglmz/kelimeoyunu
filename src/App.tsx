@@ -6,6 +6,7 @@ import { LetterState } from './types/game';
 import { LetterBox } from './components/LetterBox';
 import { GameButton } from './components/GameButton';
 import { SuccessMessage } from './components/SuccessMessage';
+import { Analytics } from "@vercel/analytics/react";
 
 function App() {
   const [currentWord, setCurrentWord] = useState(() => getRandomWord());
@@ -18,9 +19,6 @@ function App() {
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [shakeKey, setShakeKey] = useState(0); // Animasyonu tetiklemek için kullanılacak
-  const [showCloseGuess, setShowCloseGuess] = useState(false);
-  const [closeGuessMessage, setCloseGuessMessage] = useState(''); // Bu state artık kullanılmayacak, tek alertMessage kullanacağız.
-  const [correctGuessAnimationKey, setCorrectGuessAnimationKey] = useState(0); // Doğru tahmin animasyonu için
 
   useEffect(() => {
     initializeGame();
@@ -87,7 +85,6 @@ function App() {
 
         setAlertMessage('Doğru harf! Kelimeyi bulmaya çok yaklaştın.'); // Birleşik bildirim
         setShowAlert(true);
-        setCorrectGuessAnimationKey(prev => prev + 1); // Yeni animasyonu tetikle
         setTimeout(() => setShowAlert(false), 3000); // Daha uzun süreli bildirim
 
         const allCorrect = newLetterStates.every(state => state.isCorrect || state.revealed);
@@ -278,6 +275,7 @@ function App() {
           <p>Harfleri görmek için ipucu alabilir veya doğrudan tahmin edebilirsiniz</p>
         </motion.div>
       </motion.div>
+      <Analytics />
     </div>
   );
 }
