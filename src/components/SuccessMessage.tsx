@@ -3,9 +3,15 @@ import { Trophy } from 'lucide-react';
 
 interface SuccessMessageProps {
   show: boolean;
+  title?: string;
+  message?: string;
 }
 
-export const SuccessMessage = ({ show }: SuccessMessageProps) => {
+export const SuccessMessage = ({
+  show,
+  title = "Tebrikler!",
+  message = "Başardınız! 🎉"
+}: SuccessMessageProps) => {
   return (
     <AnimatePresence>
       {show && (
@@ -24,8 +30,8 @@ export const SuccessMessage = ({ show }: SuccessMessageProps) => {
               <Trophy size={48} />
             </motion.div>
             <div>
-              <h2 className="text-3xl font-bold">Tebrikler!</h2>
-              <p className="text-lg mt-1">Kelimeyi doğru bildiniz! 🎉</p>
+              <h2 className="text-3xl font-bold">{title}</h2>
+              <p className="text-lg mt-1">{message}</p>
             </div>
           </div>
         </motion.div>
