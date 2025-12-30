@@ -11,7 +11,8 @@ interface LetterBoxProps {
   onBlur: (index: number, currentLetter: string) => void;
   isInvalid?: boolean;
   isCorrect?: boolean;
-  shakeKey?: number; // Animasyonu tetiklemek için yeni prop
+  shakeKey?: number;
+  isTimeUp?: boolean; // Yeni prop
 }
 
 export const LetterBox = ({
@@ -25,7 +26,8 @@ export const LetterBox = ({
   onBlur,
   isInvalid,
   isCorrect,
-  shakeKey
+  shakeKey,
+  isTimeUp
 }: LetterBoxProps) => {
   const handleClick = () => {
     if (!revealed) {
@@ -35,12 +37,12 @@ export const LetterBox = ({
 
   return (
     <motion.div
-      key={shakeKey} // Animasyonu tetiklemek için key ekliyoruz
+      key={shakeKey}
       initial={{ scale: 0 }}
       animate={{
         scale: 1,
-        rotateY: revealed ? 0 : 0, // Harfler ters dönmesin, sadece açığa çıktığında dönüş animasyonu olsun
-        backgroundColor: isSuccess ? '#10b981' : revealed ? '#3b82f6' : '#1f2937'
+        rotateY: revealed ? 0 : 0,
+        backgroundColor: isSuccess ? '#10b981' : isTimeUp ? '#ef4444' : revealed ? '#3b82f6' : '#1f2937'
       }}
       transition={{
         delay: index * 0.1,
@@ -49,7 +51,11 @@ export const LetterBox = ({
         stiffness: 200
       }}
       onClick={handleClick}
-      className={`relative w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center rounded-lg shadow-lg border-2 ${isInvalid ? 'border-red-500 animate-shake' : isCorrect ? 'border-green-500' : 'border-gray-700'} ${!revealed ? 'cursor-pointer' : ''}`}
+      className={`relative w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center rounded-lg shadow-lg border-2 ${isInvalid ? 'border-red-500 animate-shake' :
+          isTimeUp ? 'border-red-500' :
+            isCorrect ? 'border-green-500' :
+              'border-gray-700'
+        } ${!revealed ? 'cursor-pointer' : ''}`}
     >
       {!revealed ? (
         <input
