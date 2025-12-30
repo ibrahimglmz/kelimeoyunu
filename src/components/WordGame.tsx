@@ -1,218 +1,109 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Lightbulb, RefreshCw, Send, Star, Timer } from 'lucide-react';
-import { getRandomWord } from '../data/words';
-import { LetterState } from '../types/game';
-import { LetterBox } from './LetterBox';
+import { RefreshCw, Send, Star, Timer } from 'lucide-react';
+import { getCurrentWordRound, nextWordRound, canFormWord, isValidWord, getWordScore } from '../data/words';
 import { GameButton } from './GameButton';
 import { SuccessMessage } from './SuccessMessage';
 import { AlertMessage } from './AlertMessage';
 
+import { useGameSound } from '../hooks/useGameSound';
+
 export function WordGame() {
-    const [currentWord, setCurrentWord] = useState(() => getRandomWord());
-    const [scrambledLetters, setScrambledLetters] = useState<string[]>([]);
-    const [letterStates, setLetterStates] = useState<LetterState[]>([]);
+    const [currentRound, setCurrentRound] = useState(() => getCurrentWordRound());
     const [guess, setGuess] = useState('');
     const [score, setScore] = useState(0);
-    const [isSuccess, setIsSuccess] = useState(false);
+    const [foundWords, setFoundWords] = useState<string[]>([]);
     const [showSuccess, setShowSuccess] = useState(false);
-    const [activeLetterBoxIndex, setActiveLetterBoxIndex] = useState<number | null>(null);
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
-    const [shakeKey, setShakeKey] = useState(0);
-    const [timeLeft, setTimeLeft] = useState(60);
+    const [successMessage, setSuccessMessage] = useState('');
+    const [timeLeft, setTimeLeft] = useState(90);
     const [isTimerActive, setIsTimerActive] = useState(true);
 
-    const shuffleWord = (word: string) => {
-        const letters = word.split('');
-        for (let i = letters.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [letters[i], letters[j]] = [letters[j], letters[i]];
-        }
-        return letters;
-    };
+    // Background music - playing when timer is active
+    useGameSound('/sounds/game-music.mp3', isTimerActive, 0.4);
+    // Timer sound
+    useGameSound('/sounds/timer-tick.mp3', isTimerActive, 0.2);
 
-    const initializeGame = useCallback(() => {
-        const states: LetterState[] = currentWord.word.split('').map(char => ({
-            letter: '',
-            correctLetter: char.toUpperCase(),
-            revealed: false,
-            isInvalid: false,
-            isCorrect: false
-        }));
-        setLetterStates(states);
-        setScrambledLetters(shuffleWord(currentWord.word.toUpperCase()));
-        setGuess('');
-        setIsSuccess(false);
-        setShowSuccess(false);
-        setTimeLeft(60);
-        setIsTimerActive(true);
-    }, [currentWord]);
-
-    useEffect(() => {
-        initializeGame();
-    }, [initializeGame]);
-
+    // Timer effect
     useEffect(() => {
         let interval: NodeJS.Timeout;
-        if (isTimerActive && timeLeft > 0 && !isSuccess) {
+        if (isTimerActive && timeLeft > 0) {
             interval = setInterval(() => {
                 setTimeLeft((prev) => prev - 1);
             }, 1000);
         } else if (timeLeft === 0) {
             setIsTimerActive(false);
-            setAlertMessage('Süre doldu! Kelime: ' + currentWord.word);
+            setAlertMessage(`Süre doldu! ${foundWords.length} kelime buldunuz.`);
             setShowAlert(true);
             setTimeout(() => setShowAlert(false), 4000);
-
-            // Reveal the word
-            setLetterStates(prev => prev.map(state => ({
-                ...state,
-                letter: state.correctLetter,
-                revealed: true,
-                isCorrect: false // Highlight as error/timeout, not success
-            })));
         }
         return () => clearInterval(interval);
-    }, [isTimerActive, timeLeft, isSuccess, currentWord.word]);
-
-
-    const handleLetterBoxClick = (index: number) => {
-        if (timeLeft === 0) return;
-        setActiveLetterBoxIndex(index);
-        const newLetterStates = [...letterStates];
-        if (newLetterStates[index]) {
-            newLetterStates[index].isInvalid = false;
-        }
-        setLetterStates(newLetterStates);
-    };
-
-    const handleLetterBoxChange = (index: number, newLetter: string) => {
-        if (timeLeft === 0) return;
-        const newLetterStates = [...letterStates];
-        if (newLetterStates[index]) {
-            newLetterStates[index].letter = newLetter;
-        }
-        setLetterStates(newLetterStates);
-    };
-
-    const handleLetterBoxBlur = (index: number, currentLetter: string) => {
-        if (timeLeft === 0) return;
-        const newLetterStates = [...letterStates];
-        const correctLetterOfBox = newLetterStates[index].correctLetter;
-
-        if (newLetterStates[index]) {
-            if (currentLetter !== '' && !/^[a-zA-Z]$/.test(currentLetter)) {
-                setAlertMessage('Lütfen sadece harf girin.');
-                setShowAlert(true);
-                setShakeKey(prev => prev + 1);
-                setTimeout(() => setShowAlert(false), 2000);
-
-                newLetterStates[index].isInvalid = true;
-                newLetterStates[index].letter = '';
-                newLetterStates[index].revealed = false;
-                newLetterStates[index].isCorrect = false;
-            } else if (currentLetter === '') {
-                newLetterStates[index].letter = '';
-                newLetterStates[index].revealed = false;
-                newLetterStates[index].isInvalid = false;
-                newLetterStates[index].isCorrect = false;
-            } else if (currentLetter === correctLetterOfBox) {
-                newLetterStates[index].letter = currentLetter;
-                newLetterStates[index].isInvalid = false;
-                newLetterStates[index].isCorrect = true;
-                newLetterStates[index].revealed = true;
-
-                // setAlertMessage('Doğru harf! Kelimeyi bulmaya çok yaklaştın.');
-                // setShowAlert(true);
-                // setTimeout(() => setShowAlert(false), 3000);
-                // Removing intermediate alerts to keep flow smoother with timer
-
-                const allCorrect = newLetterStates.every(state => state.isCorrect || state.revealed);
-                if (allCorrect) {
-                    handleSuccess(newLetterStates);
-                }
-
-            } else {
-                setAlertMessage('Yanlış harf!');
-                setShowAlert(true);
-                setShakeKey(prev => prev + 1);
-                setTimeout(() => setShowAlert(false), 2000);
-
-                newLetterStates[index].isInvalid = true;
-                newLetterStates[index].letter = '';
-                newLetterStates[index].revealed = false;
-                newLetterStates[index].isCorrect = false;
-            }
-            setLetterStates(newLetterStates);
-        }
-    };
-
-    const handleSuccess = (finalStates: LetterState[]) => {
-        setLetterStates(finalStates);
-        setIsSuccess(true);
-        setShowSuccess(true);
-        setIsTimerActive(false);
-        setScore(score + 10 + Math.floor(timeLeft / 2)); // Bonus for time
-
-        setTimeout(() => {
-            setShowSuccess(false);
-        }, 3000);
-    };
-
-    const handleHint = () => {
-        if (timeLeft === 0) return;
-        const hiddenIndices = letterStates
-            .map((state, index) => (!state.revealed ? index : -1))
-            .filter(index => index !== -1);
-
-        if (hiddenIndices.length > 0) {
-            const randomIndex = hiddenIndices[Math.floor(Math.random() * hiddenIndices.length)];
-            const newStates = [...letterStates];
-            newStates[randomIndex].revealed = true;
-            newStates[randomIndex].letter = newStates[randomIndex].correctLetter;
-            newStates[randomIndex].isCorrect = true;
-            setLetterStates(newStates);
-
-            // Check win condition after hint
-            const allCorrect = newStates.every(state => state.isCorrect || state.revealed);
-            if (allCorrect) {
-                handleSuccess(newStates);
-            }
-        }
-    };
+    }, [isTimerActive, timeLeft, foundWords.length]);
 
     const handleGuess = () => {
-        if (timeLeft === 0) return;
-        const normalizedGuess = guess.toUpperCase().trim();
-        const normalizedWord = currentWord.word.toUpperCase();
+        if (timeLeft === 0 || !guess.trim()) return;
 
-        if (normalizedGuess === normalizedWord) {
-            const newStates = letterStates.map(state => ({
-                ...state,
-                revealed: true,
-                letter: state.correctLetter,
-                isCorrect: true
-            }));
-            handleSuccess(newStates);
-        } else {
-            setAlertMessage('Yanlış tahmin! Tekrar dene.');
+        const normalizedGuess = guess.toUpperCase().trim();
+
+        // Check if already found
+        if (foundWords.includes(normalizedGuess)) {
+            setAlertMessage('Bu kelimeyi zaten buldunuz!');
             setShowAlert(true);
-            setShakeKey(prev => prev + 1);
             setTimeout(() => setShowAlert(false), 2000);
+            setGuess('');
+            return;
         }
+
+        // Check if can be formed from letters
+        if (!canFormWord(normalizedGuess, currentRound.letters)) {
+            setAlertMessage('Bu kelime verilen harflerden oluşturulamaz!');
+            setShowAlert(true);
+            setTimeout(() => setShowAlert(false), 2000);
+            setGuess('');
+            return;
+        }
+
+        // Check if valid word in current round
+        if (!isValidWord(normalizedGuess)) {
+            setAlertMessage('Bu kelime listede yok!');
+            setShowAlert(true);
+            setTimeout(() => setShowAlert(false), 2000);
+            setGuess('');
+            return;
+        }
+
+        // Valid word found!
+        const points = getWordScore(normalizedGuess);
+        setFoundWords([...foundWords, normalizedGuess]);
+        setScore(score + points);
+        setSuccessMessage(`Harika! "${normalizedGuess}" +${points} puan`);
+        setShowSuccess(true);
+        setTimeout(() => setShowSuccess(false), 2000);
         setGuess('');
     };
 
-    const handleNewGame = () => {
-        setCurrentWord(getRandomWord());
+    const handleNextRound = () => {
+        const newRound = nextWordRound();
+        setCurrentRound(newRound);
+        setGuess('');
+        setFoundWords([]);
+        setTimeLeft(90);
+        setIsTimerActive(true);
     };
 
-    const allRevealed = letterStates.every(state => state.revealed);
+    const handleSkipRound = () => {
+        setAlertMessage(`${foundWords.length} kelime buldunuz. Sonraki tura geçiliyor...`);
+        setShowAlert(true);
+        setTimeout(() => {
+            setShowAlert(false);
+            handleNextRound();
+        }, 2000);
+    };
 
     return (
         <>
-            <SuccessMessage show={showSuccess} message={`Tebrikler! +${10 + (isSuccess ? Math.floor(timeLeft / 2) : 0)} puan`} />
+            <SuccessMessage show={showSuccess} message={successMessage} />
             <AlertMessage show={showAlert} message={alertMessage} />
 
             <motion.div
@@ -243,58 +134,70 @@ export function WordGame() {
                     transition={{ delay: 0.3 }}
                     className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-2xl border border-gray-700"
                 >
+                    {/* Round Number */}
+                    <div className="mb-6 text-center">
+                        <p className="text-gray-400 text-sm mb-2">TUR</p>
+                        <motion.p
+                            initial={{ scale: 0.9 }}
+                            animate={{ scale: 1 }}
+                            className="text-4xl font-bold text-blue-400"
+                        >
+                            {currentRound.roundNumber} / 20
+                        </motion.p>
+                    </div>
+
+                    {/* Letters */}
                     <div className="mb-8 text-center">
-                        <p className="text-gray-400 text-sm mb-4">GİZLİ KELİME HARFLERİ</p>
+                        <p className="text-gray-400 text-sm mb-4">HARFLER</p>
                         <div className="flex flex-wrap justify-center gap-2 mb-2">
-                            {scrambledLetters.map((char, idx) => (
+                            {currentRound.letters.map((char, idx) => (
                                 <motion.div
                                     key={`${char}-${idx}`}
-                                    initial={{ scale: 0 }}
-                                    animate={{ scale: 1 }}
+                                    initial={{ scale: 0, rotate: -180 }}
+                                    animate={{ scale: 1, rotate: 0 }}
                                     transition={{ delay: idx * 0.05 }}
-                                    className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-gray-700 rounded-lg text-xl sm:text-2xl font-bold text-blue-300 shadow-inner border border-gray-600"
+                                    className="w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl text-2xl sm:text-3xl font-bold text-white shadow-lg border-2 border-blue-300"
                                 >
                                     {char}
                                 </motion.div>
                             ))}
                         </div>
-                        {/* <p className="text-xs text-gray-500 mt-2">İpucu: {currentWord.hint}</p> */}
                     </div>
 
-                    <div className="flex flex-nowrap justify-center gap-3 mb-8 overflow-x-auto pb-4">
-                        {letterStates.map((state, index) => (
-                            <LetterBox
-                                key={index}
-                                letter={state.letter}
-                                revealed={state.revealed}
-                                index={index}
-                                isSuccess={isSuccess}
-                                onClick={handleLetterBoxClick}
-                                onLetterChange={handleLetterBoxChange}
-                                isActive={activeLetterBoxIndex === index}
-                                onBlur={handleLetterBoxBlur}
-                                isInvalid={state.isInvalid}
-                                isCorrect={state.isCorrect}
-                                shakeKey={shakeKey}
-                                isTimeUp={timeLeft === 0 && !isSuccess}
-                            />
-                        ))}
-                    </div>
+                    {/* Found Words */}
+                    {foundWords.length > 0 && (
+                        <div className="mb-6">
+                            <p className="text-gray-400 text-sm mb-3 text-center">BULUNAN KELİMELER ({foundWords.length})</p>
+                            <div className="flex flex-wrap justify-center gap-2">
+                                {foundWords.map((word, idx) => (
+                                    <motion.div
+                                        key={idx}
+                                        initial={{ scale: 0 }}
+                                        animate={{ scale: 1 }}
+                                        className="px-3 py-1 bg-green-600 text-white rounded-lg text-sm font-semibold"
+                                    >
+                                        {word} ({getWordScore(word)}p)
+                                    </motion.div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
+                    {/* Input */}
                     <div className="space-y-6">
                         <div>
                             <label htmlFor="guess" className="block text-sm font-medium text-gray-300 mb-2">
-                                Tahmininizi Girin
+                                Kelime Girin
                             </label>
                             <input
                                 id="guess"
                                 type="text"
                                 value={guess}
-                                onChange={(e) => setGuess(e.target.value)}
+                                onChange={(e) => setGuess(e.target.value.toUpperCase())}
                                 onKeyPress={(e) => e.key === 'Enter' && handleGuess()}
-                                disabled={allRevealed || timeLeft === 0}
+                                disabled={timeLeft === 0}
                                 placeholder="Kelimeyi yazın..."
-                                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-white placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-white placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all uppercase"
                             />
                         </div>
 
@@ -302,37 +205,30 @@ export function WordGame() {
                             <GameButton
                                 onClick={handleGuess}
                                 icon={Send}
-                                label="Tahmin Et"
+                                label="Gönder"
                                 variant="success"
-                                disabled={!guess.trim() || allRevealed || timeLeft === 0}
+                                disabled={!guess.trim() || timeLeft === 0}
                             />
                             <GameButton
-                                onClick={handleHint}
-                                icon={Lightbulb}
-                                label="İpucu Al"
-                                variant="primary"
-                                disabled={allRevealed || timeLeft === 0}
-                            />
-                            <GameButton
-                                onClick={handleNewGame}
+                                onClick={handleSkipRound}
                                 icon={RefreshCw}
-                                label="Yeni Kelime"
+                                label="Sonraki Tur"
                                 variant="secondary"
                             />
                         </div>
                     </div>
 
-                    {isSuccess && (
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="mt-6 text-center"
-                        >
-                            <p className="text-green-400 text-lg font-semibold">
-                                +{10 + Math.floor(timeLeft / 2)} puan kazandınız!
-                            </p>
-                        </motion.div>
-                    )}
+                    {/* Stats */}
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="mt-6 text-center text-gray-400 text-sm"
+                    >
+                        <p>Toplam {currentRound.availableWords.length} kelime bulunabilir</p>
+                        <p className="mt-2 text-xs">
+                            Puanlama: 9+ harf=15p, 8 harf=12p, 7 harf=10p, 6 harf=8p, 5 harf=5p
+                        </p>
+                    </motion.div>
                 </motion.div>
 
                 <motion.div
@@ -341,10 +237,9 @@ export function WordGame() {
                     transition={{ delay: 0.5 }}
                     className="mt-8 text-center text-gray-400 text-sm"
                 >
-                    <p>Harfleri kullanarak kelimeyi bulun. Her soru için 60 saniyeniz var!</p>
+                    <p>Verilen harflerden kelimeler oluşturun. Her tur için 90 saniyeniz var!</p>
                 </motion.div>
             </motion.div>
         </>
     );
 }
-

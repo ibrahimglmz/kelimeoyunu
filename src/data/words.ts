@@ -1,198 +1,179 @@
 import { Word } from '../types/game';
 
-export const WORDS: Word[] = [
-  // 9 Harfli
-  { word: 'METABOLİK', hint: 'Canlı yapım-yıkım süreciyle ilgili' },
-  { word: 'DİZİNLERE', hint: 'Listelere, fihristlere' },
-  { word: 'ZİNDERELİ', hint: 'Külkedisi masalının uyarlaması (Z ile)' },
-  { word: 'PLANETARY', hint: 'Gezegensel (İngilizce kökenli)' },
-  { word: 'MERDİVENLİ', hint: 'Basamaklı yapısı olan' },
-  { word: 'MERDİVENCİ', hint: 'Basamaklı araç yapan veya satan' },
-  { word: 'VERİMLENME', hint: 'Randımanlı hale gelme' },
-  { word: 'TOPARLACIK', hint: 'Küçük ve yuvarlakça' },
-  { word: 'TOPARLAMA', hint: 'Derleyip toplama işi' },
-  { word: 'TOPARLAKÇA', hint: 'Yuvarlağa yakın' },
+// Sabit kelime turları - Her tur için harfler ve kelimeler
+export interface WordRound {
+  letters: string[];
+  words: string[];
+}
 
-  // 8 Harfli
-  { word: 'MELODİKA', hint: 'Üflemeli ve tuşlu bir müzik aleti' },
-  { word: 'DENİZERİ', hint: 'Bahriyeli asker' },
-  { word: 'PLANELİST', hint: 'Açık oturum konuşmacısı' }, // Typo in source 'PANELİST' -> image says 'PANELİST' actually.
-  { word: 'PANELİST', hint: 'Açık oturum konuşmacısı' },
-  { word: 'PIRLANTA', hint: 'Değerli bir elmas türü' },
-  { word: 'GELENEKÇİ', hint: 'Eskiye, ananelere bağlı olan' },
-  { word: 'ÇENGELİNE', hint: 'Ucu eğri demirine' },
-  { word: 'SALTIKANAT', hint: 'Hükümdarlık (Saltanat - Typo in source?)' }, // Image says SALTIKANAT. Keeping it.
-  { word: 'SANTALİK', hint: 'Bir tür reçine veya dokuma?' },
-  { word: 'DEFTERİM', hint: 'Yazı aracım' },
-  { word: 'MERDİVEN', hint: 'Basamaklı geçit' },
-  { word: 'DEVİRMEN', hint: 'Çevirmen (Eski dil) veya deviren' },
-  { word: 'ERDİRMEN', hint: 'Erdiren kişi' },
-  { word: 'OKULLARDA', hint: 'Eğitim kurumlarında' },
-
-  // 7 Harfli
-  { word: 'MELODİK', hint: 'Kulağa hoş gelen, ahenkli' },
-  { word: 'METALİK', hint: 'Madenle ilgili, madensi' },
-  { word: 'KATOLİK', hint: 'Hristiyanlıkta bir mezhep' },
-  { word: 'AMELİYE', hint: 'Yapılan iş, işlem' },
-  { word: 'KERETİN', hint: 'Ayakkabı çekeceği (Kerata)' },
-  { word: 'DİZİLME', hint: 'Sıraya girme' },
-  { word: 'ERİNDİR', hint: 'Üşendir' },
-  { word: 'DERİNCİ', hint: 'Derin işlerle uğraşan' },
-  { word: 'DİRENİŞ', hint: 'Karşı koyma' },
-  { word: 'EZDİRME', hint: 'Baskı altına aldırma' },
-  { word: 'DİZİNER', hint: 'Tasarımcı (Okunuşuyla)' },
-  { word: 'PANTERİ', hint: 'Yırtıcı hayvanı' },
-  { word: 'PLANTER', hint: 'Ekici (Tarım)' },
-  { word: 'ARPLİNE', hint: 'Arp çizgisi?' },
-  { word: 'GENELÇE', hint: 'Genelge (Halk ağzı?)' },
-  { word: 'ÇENEKLİ', hint: 'Çenesi olan' },
-  { word: 'ÇELENLİ', hint: 'Çeleni olan' },
-  { word: 'KASATLI', hint: 'Kasıtlı, bilerek' },
-  { word: 'İNATSAL', hint: 'İnatla ilgili' },
-  { word: 'SİNYALİ', hint: 'İşareti, uyarısı' },
-  { word: 'ASKINTI', hint: 'Sırnaşık, musallat olan' },
-  { word: 'DEFTERİ', hint: 'Kayıt tutulan kitapçığı' },
-  { word: 'DEMETLİ', hint: 'Destelenmiş' },
-  { word: 'ERİTMEK', hint: 'Sıvı hale getirmek' },
-  { word: 'MEDETLİ', hint: 'Yardım uman' },
-  { word: 'FERDİYE', hint: 'Bireye özgü olan' },
-  { word: 'OKURLAR', hint: 'Okuyucu kitlesi' },
-  { word: 'DORUKLA', hint: 'Zirve ile' },
-  { word: 'ORDULUK', hint: 'Ordu için ayrılmış' },
-  { word: 'KADROLU', hint: 'Sürekli işi olan' },
-  { word: 'ODAKLAR', hint: 'Toplanma noktaları' },
-  { word: 'KORUDAN', hint: 'Küçük ormandan' },
-  { word: 'DEVİRME', hint: 'Yıkma, düşürme' },
-  { word: 'ERDEMNİ', hint: 'Erdemli (N ile)' },
-  { word: 'EVİRMEK', hint: 'Çevirmek, döndürmek' },
-  { word: 'NEDİME', hint: 'Gelin yardımcısı kadın' }, // Movde NEDİM to 5, NEDİME is 6 usually but here listed in 7? wait. NEDİM(5), NEDİME(6). Image 19: 7 Harfli NEDİM-MİNDERE? No, "NEDİM-MİNDERE" 7 harfli satırında. NEDİM 5 harfli. Hata var.
-  // Correction: Image 19 7 harfli line: DEVİRME-ERDEMNİ-EVİRMEK-NEDİM-MİNDERE. 
-  // DEVİRME(7), ERDEMNİ(7), EVİRMEK(7), MİNDERE(7). NEDİM is 5. It might be NEDİME(6)? Or NEDİMLER(8)?
-  // I will skip NEDİM in 7 letters list and keep it in its correct place if found.
-  { word: 'MİNDERE', hint: 'Oturma yastığına' },
-  { word: 'TOPARLA', hint: 'Düzenle' },
-  { word: 'APORTLA', hint: 'Getir komutuyla' },
-  { word: 'PAÇALAR', hint: 'Pantolonun alt kısımları' },
-
-  // 6 Harfli
-  { word: 'MELODİ', hint: 'Ezgi, nağme' },
-  { word: 'TEKİLA', hint: 'Meksika kökenli içki' },
-  { word: 'KALİTE', hint: 'Nitelik, üstünlük' },
-  { word: 'MELİKE', hint: 'Kadın hükümdar' },
-  { word: 'ETİMOL', hint: 'Etimoloji (Kısaca)' },
-  { word: 'MERTEK', hint: 'Çatılarda kullanılan ağaç' },
-  { word: 'MERKEZ', hint: 'Orta nokta' },
-  { word: 'METRİK', hint: 'Metre sistemine göre' },
-  { word: 'MİKTAR', hint: 'Ölçü, sayı' },
-  { word: 'TEKMİL', hint: 'Tamam, eksiksiz' },
-  { word: 'KERTME', hint: 'Çentik' },
-  { word: 'NETİCE', hint: 'Sonuç' },
-  { word: 'EDİRNE', hint: 'Trakya\'da bir ilimiz' },
-  { word: 'DERİNİ', hint: 'Cildi, yüzeyi kaplayan dokuyu' },
-  { word: 'DİZİNE', hint: 'Bacağın eklem yerine' },
-  { word: 'ZİNDEN', hint: 'Canlılığından (Zinde)' },
-  { word: 'DİZİCİ', hint: 'Dizgi işini yapan' },
-  { word: 'PANTER', hint: 'Büyük yırtıcı kedi' },
-  { word: 'NEPTÜN', hint: 'Güneş sistemindeki bir gezegen' },
-  { word: 'REPLİK', hint: 'Oyuncu sözü' },
-  { word: 'PLANET', hint: 'Gezegen' },
-  { word: 'ERİTAN', hint: 'Eriten kimse' },
-  { word: 'GENÇLİ', hint: 'Genç olan' },
-  { word: 'ÇENGEL', hint: 'Eğri uçlu demir' },
-  { word: 'KEÇELİ', hint: 'Keçesi olan' },
-  { word: 'İNEKÇE', hint: 'İneğe özgü' },
-  { word: 'TAKSİN', hint: 'Beğenme, alkışlama (Tahsin?)' }, // Image says TAKSİN.
-  { word: 'İSTİKA', hint: '?' },
-  { word: 'KALSİT', hint: 'Kireç taşı minerali' },
-  { word: 'DEFTER', hint: 'Yazı yazmaya yarayan kitapçık' },
-  { word: 'METRİS', hint: 'Siper, korunak' },
-  { word: 'ERİTME', hint: 'Sıvılaştırma' },
-  { word: 'TERFİ', hint: 'Rütbe yükselmesi' }, // Also in 5 letters list in image? Image 17 6 harfli: TERFİ? No, TERFİ is 5. Image says 6: DEFTER-METRİS-METRİK-ERİTME-TERFİ(5!). Typo in image group. I will place it in 5.
-  { word: 'KORDAL', hint: 'Şeritli?' },
-  { word: 'DUALIK', hint: 'Dua etmeye özgü' },
-  { word: 'DARLIK', hint: 'Sıkıntı, geçim zorluğu' },
-  { word: 'MEDENİ', hint: 'Uygar' },
-  { word: 'MİNDER', hint: 'Yer oturağı' },
-  { word: 'DERİME', hint: 'Toplama, derleme' },
-  { word: 'NEDİME', hint: 'Düğün yardımcısı kız' },
-  { word: 'VERİME', hint: 'Randımana' },
-  { word: 'MENDİL', hint: 'Cep bezi' },
-  { word: 'TOPLAM', hint: 'Yekün' }, // Image says TOPLAMA(7). 6 Harfli: TOPLAMA? No. Image 20: 6 Harfli TOPLAMA(7)-PAROLA(6)-TOPRAK(6)-PAÇALI(6)-TORLAK(6). TOPLAMA is 7. I'll put it in 7.
-  { word: 'PAROLA', hint: 'Gizli işaret, şifre' },
-  { word: 'TOPRAK', hint: 'Yer kabuğu' },
-  { word: 'PAÇALI', hint: 'Paçası olan' },
-  { word: 'TORLAK', hint: 'Acemi, toy' },
-
-  // 5 Harfli
-  { word: 'EMLAK', hint: 'Taşınmaz mallar' },
-  { word: 'METİL', hint: 'Kimyasal bir kök' },
-  { word: 'TEKİL', hint: 'Tek olan, çoğul olmayan' },
-  { word: 'KAMET', hint: 'Boy bos' },
-  { word: 'MOTEL', hint: 'Yol üstü konaklama yeri' },
-  { word: 'LOKMA', hint: 'Bir tür hamur tatlısı' },
-  { word: 'TERİM', hint: 'Bilim veya sanat terimi' },
-  { word: 'TEKER', hint: 'Tekerlek' },
-  { word: 'METRE', hint: 'Uzunluk ölçü birimi' },
-  { word: 'METİN', hint: 'Yazılı eser veya dayanıklı' },
-  { word: 'İTMEK', hint: 'Güçle ileri götürmek' },
-  { word: 'KEREM', hint: 'Cömertlik, bağış' },
-  { word: 'DENİZ', hint: 'Büyük tuzlu su kütlesi' },
-  { word: 'DİZİN', hint: 'Endeks, liste' },
-  { word: 'DERİN', hint: 'Yüzeyi dibinden uzak' },
-  { word: 'DİREN', hint: 'Harman çatalı' },
-  { word: 'ZİNDE', hint: 'Canlı, dinç' },
-  { word: 'ERDEN', hint: 'El değmemiş, bakire' },
-  { word: 'PELİN', hint: 'Acı ve ıtırlı bir bitki' },
-  { word: 'PARTİ', hint: 'Siyasi topluluk veya eğlence' },
-  { word: 'PANEL', hint: 'Açık oturum' },
-  { word: 'ANTRE', hint: 'Giriş holü' },
-  { word: 'TALİP', hint: 'İsteyen kişi' },
-  { word: 'TERLİ', hint: 'Terlemiş olan' },
-  { word: 'LİNET', hint: 'Bir çeşit bez veya isim' },
-  { word: 'GELEN', hint: 'Ulaşan, varan' },
-  { word: 'ÇELİK', hint: 'Sertleştirilmiş demir' },
-  { word: 'ÇENEK', hint: 'Gaga veya böcek çenesi' },
-  { word: 'ENGEL', hint: 'Mani, güçlük' },
-  { word: 'NİKEL', hint: 'Gümüş renginde bir metal' },
-  { word: 'EKLEN', hint: 'İlave edilmek' },
-  { word: 'SAKİN', hint: 'Durgun, sessiz' },
-  { word: 'LİSAN', hint: 'Dil' },
-  { word: 'NAKİT', hint: 'Peşin para' },
-  { word: 'SANKİ', hint: 'Güya, sözde' },
-  { word: 'İSKAN', hint: 'Yerleşme, yurtlanma' },
-  { word: 'ANTİK', hint: 'İlk Çağ sanatı ile ilgili' },
-  { word: 'TALİK', hint: 'Bir yazı türü' },
-  { word: 'KASTİ', hint: 'Bile bile, kasten' },
-  { word: 'DEMET', hint: 'Deste, bağlam' },
-  { word: 'TERFİ', hint: 'Yükselme' },
-  { word: 'FERDİ', hint: 'Kişisel, bireysel' },
-  { word: 'LİDER', hint: 'Önder, şef' },
-  { word: 'DERME', hint: 'Toplama, bir araya getirme' },
-  { word: 'DORUK', hint: 'Zirve, en üst nokta' },
-  { word: 'KADRO', hint: 'Bir işte çalışanlar grubu' },
-  { word: 'DOLAR', hint: 'Bir para birimi' },
-  { word: 'KURAL', hint: 'Kaide, nizam' },
-  { word: 'KADİR', hint: 'Değer, kıymet' },
-  { word: 'ODALI', hint: 'Odası bulunan' },
-  { word: 'RADYO', hint: 'Ses yayın cihazı' },
-  { word: 'DURAK', hint: 'Taşıt bekleme yeri' },
-  { word: 'ERDEM', hint: 'Fazilet' },
-  { word: 'DENİM', hint: 'Kot kumaşı' },
-  { word: 'DEVİR', hint: 'Çağ, dönem' },
-  { word: 'EVRİM', hint: 'Aşamalı gelişim' },
-  { word: 'NEDİM', hint: 'Sohbet arkadaşı' },
-  { word: 'VEREM', hint: 'Tüberküloz hastalığı' },
-  { word: 'ENDER', hint: 'Çok az bulunan' },
-  { word: 'TOPAL', hint: 'Aksayarak yürüyen' },
-  { word: 'APORT', hint: 'Av köpeği komutu, hazır ol' },
-  { word: 'TOPLA', hint: 'Bir araya getir' },
-  { word: 'POLAR', hint: 'Kutup ile ilgili veya kumaş' },
-  { word: 'PLATO', hint: 'Yayla' },
-  { word: 'ÇALAP', hint: 'Tanrı (Eski Türkçe)' },
-  { word: 'TOPAÇ', hint: 'Döndürülen oyuncak' },
+const WORD_ROUNDS: WordRound[] = [
+  {
+    letters: ['S', 'A', 'İ', 'T', 'E', 'R', 'O', 'K'],
+    words: ['TEORİSİ', 'TEORİK', 'TAKSİR', 'TEORİ', 'ROKET', 'KASTİ', 'TERAS', 'AKORT']
+  },
+  {
+    letters: ['M', 'A', 'N', 'O', 'S', 'T', 'E', 'K'],
+    words: ['SEMANTİK', 'KASTAMONU', 'KESTANE', 'MASKOT', 'MANŞET', 'KONTES', 'MANTO', 'SONAT', 'METAN', 'SOKET', 'KASET', 'MASON']
+  },
+  {
+    letters: ['B', 'E', 'L', 'İ', 'T', 'A', 'S', 'O'],
+    words: ['STABİLİZE', 'BASKETBOL', 'STABİLE', 'ASALETİ', 'SABOTAJ', 'BELASIZ', 'TÖRESEL', 'STABİL', 'ASALET', 'İSABET', 'SİLOİT', 'BOYALI', 'OTOBÜS', 'TESBİH', 'TABLO', 'BALET', 'LİSTE']
+  },
+  {
+    letters: ['A', 'K', 'E', 'L', 'İ', 'M', 'O', 'T'],
+    words: ['METABOLİK', 'MELODİKA', 'MELODİK', 'METALİK', 'KATOLİK', 'AMELİYE', 'MELODİ', 'TEKİLA', 'KALİTE', 'MELİKE', 'ETİMOL', 'EMLAK', 'METİL', 'TEKİL', 'KAMET', 'MOTEL', 'LOKMA']
+  },
+  {
+    letters: ['S', 'N', 'E', 'R', 'E', 'K', 'A', 'E'],
+    words: ['SERENAT', 'SERENAY', 'SEKRETER', 'ESNEMEK', 'SERKEŞ', 'EKSERİ', 'NEREDE', 'EKSER', 'EKSEN', 'KENAR', 'KESER', 'SEREN']
+  },
+  {
+    letters: ['T', 'A', 'O', 'R', 'B', 'L', 'İ', 'K'],
+    words: ['AKROBATİK', 'ORBİTALİK', 'AKROBAT', 'BARİTOK', 'ROBOTİK', 'TABLOİD', 'BOYALI', 'KALORİ', 'BARKOT', 'KOBRA', 'TABLO', 'BAROK', 'FLORT', 'ORBİT', 'KORAL', 'TABİR']
+  },
+  {
+    letters: ['M', 'E', 'R', 'K', 'E', 'T', 'İ', 'N'],
+    words: ['KERETİN', 'MERTEK', 'MERKEZ', 'METRİK', 'MİKTAR', 'TEKMİL', 'KERTME', 'NETİCE', 'TERİM', 'TEKER', 'METRE', 'METİN', 'İTMEK', 'KEREM']
+  },
+  {
+    letters: ['D', 'E', 'İ', 'Z', 'İ', 'R', 'N', 'E'],
+    words: ['DİZİNLERE', 'DENİZERİ', 'ZİNDERELİ', 'DİZİLME', 'ERİNDİR', 'DERİNCİ', 'DİRENİŞ', 'EZDİRME', 'DİZİNER', 'EDİRNE', 'DERİNİ', 'DİZİNE', 'ZİNDEN', 'DİZİCİ', 'DENİZ', 'DİZİN', 'DERİN', 'DİREN', 'ZİNDE', 'ERDEN']
+  },
+  {
+    letters: ['P', 'N', 'A', 'L', 'T', 'R', 'İ', 'E'],
+    words: ['PLANETARY', 'PANELİST', 'PIRLANTA', 'PANTERİ', 'PLANTER', 'ARPLİNE', 'PANTER', 'NEPTÜN', 'REPLİK', 'PLANET', 'ERİTAN', 'PELİN', 'PARTİ', 'PANEL', 'ANTRE', 'TALİP', 'TERLİ', 'LİNET']
+  },
+  {
+    letters: ['O', 'R', 'L', 'T', 'A', 'K', 'İ', 'E'],
+    words: ['KALORİT', 'KORALİT', 'TEORİKA', 'TEORİK', 'KALORİ', 'REKTÖR', 'KORİST', 'KARTEL', 'TEORİ', 'ORTAK', 'ROKET', 'RAKET', 'KOTRA', 'KATİL']
+  },
+  {
+    letters: ['G', 'E', 'N', 'C', 'K', 'E', 'L', 'İ'],
+    words: ['GELENEKÇİ', 'ÇENGELİNE', 'GENELÇE', 'ÇENEKLİ', 'ÇELENLİ', 'GENÇLİ', 'ÇENGEL', 'KEÇELİ', 'İNEKÇE', 'GELEN', 'ÇELİK', 'ÇENEK', 'ENGEL', 'NİKEL', 'EKLEN']
+  },
+  {
+    letters: ['B', 'A', 'N', 'S', 'A', 'K', 'İ', 'E'],
+    words: ['KABİNES', 'İSKEBAN', 'KASABAN', 'KABİNE', 'BANİSE', 'AKSİNE', 'BİNAEN', 'BANKA', 'İSKAN', 'EKSİN', 'KABİN', 'SAKİN', 'NASİB', 'KASİS']
+  },
+  {
+    letters: ['K', 'O', 'N', 'U', 'L', 'E', 'C', 'U'],
+    words: ['KONUKÇU', 'KONUKLU', 'KONUÇLU', 'KONÇLU', 'OKULCU', 'ÇOKLUK', 'KONUK', 'KOLON', 'ÇOKLU', 'UÇKUN']
+  },
+  {
+    letters: ['S', 'A', 'K', 'N', 'A', 'T', 'İ', 'L'],
+    words: ['SALTIKANAT', 'SANTALİK', 'KASATLI', 'İNATSAL', 'SİNYALİ', 'ASKINTI', 'TAKSİN', 'İSTİKA', 'KALSİT', 'SAKİN', 'LİSAN', 'NAKİT', 'SANKİ', 'İSKAN', 'ANTİK', 'TALİK', 'KASTİ']
+  },
+  {
+    letters: ['O', 'Y', 'U', 'L', 'N', 'C', 'A', 'K'],
+    words: ['OYUNCAKLI', 'OYUNCAKÇI', 'OYUNCAK', 'YOLUNCA', 'KOLONYA', 'ÇOKLAR', 'OYULAN', 'OYLAMA', 'YOLÇUK', 'KOYUN', 'OYNAK', 'ÇOKLU', 'UÇKUN', 'KOYUL', 'KOLAN', 'ÇANAK']
+  },
+  {
+    letters: ['A', 'R', 'K', 'L', 'A', 'D', 'A', 'S'],
+    words: ['ARKADAŞÇA', 'ARKADAŞLI', 'ARKADAŞ', 'ADALARDA', 'DARALMAK', 'ADAKLAR', 'AKSALAR', 'DARALSA', 'ADAKLI', 'ARAKAS', 'ADALAR', 'KARKAS', 'ARDAK', 'SALAK', 'SKALA', 'ARADA', 'SARAK', 'ALAKA', 'ADALE']
+  },
+  {
+    letters: ['D', 'E', 'F', 'M', 'T', 'E', 'R', 'İ'],
+    words: ['DEFTERİMİ', 'DEFTERLER', 'DEFTERİM', 'DEFTERİ', 'DEMETLİ', 'ERİTMEK', 'MEDETLİ', 'FERDİYE', 'DEFTER', 'METRİS', 'METRİK', 'ERİTME', 'TERFİ', 'DEMET', 'FERDİ', 'METRE', 'TERİM', 'METİN', 'LİDER', 'DERME']
+  },
+  {
+    letters: ['O', 'K', 'İ', 'U', 'L', 'D', 'A', 'R'],
+    words: ['OKULLARDA', 'OKURLAR', 'DORUKLA', 'ORDULUK', 'KADROLU', 'ODAKLAR', 'KORUDAN', 'KORDAL', 'DUALIK', 'DARLIK', 'DORUK', 'KADRO', 'DOLAR', 'KURAL', 'KADİR', 'ODALI', 'RADYO', 'DURAK']
+  },
+  {
+    letters: ['M', 'E', 'R', 'N', 'D', 'İ', 'V', 'E'],
+    words: ['MERDİVENLİ', 'MERDİVENCİ', 'VERİMLENME', 'MERDİVEN', 'DEVİRMEN', 'ERDİRMEN', 'DEVİRME', 'ERDEMNİ', 'EVİRMEK', 'MİNDERE', 'MEDENİ', 'MİNDER', 'DERİME', 'NEDİME', 'VERİME', 'MENDİL', 'ERDEM', 'DENİM', 'DEVİR', 'EVRİM', 'NEDİM', 'VEREM', 'DERİN', 'ENDER']
+  },
+  {
+    letters: ['T', 'O', 'R', 'P', 'A', 'C', 'L', 'A'],
+    words: ['TOPARLACIK', 'TOPARLAMA', 'TOPARLAKÇA', 'TOPARLA', 'APORTLA', 'PAÇALAR', 'TOPLAMA', 'PAROLA', 'TOPRAK', 'PAÇALI', 'TORLAK', 'TOPAL', 'APORT', 'TOPLA', 'POLAR', 'PLATO', 'ÇALAP', 'TOPAÇ']
+  }
 ];
 
+let currentRoundIndex = 0;
+
+export interface WordRoundData {
+  roundNumber: number;
+  letters: string[];
+  availableWords: string[];
+}
+
+/**
+ * Get the current word round
+ */
+export function getCurrentWordRound(): WordRoundData {
+  const round = WORD_ROUNDS[currentRoundIndex];
+  return {
+    roundNumber: currentRoundIndex + 1,
+    letters: [...round.letters],
+    availableWords: [...round.words]
+  };
+}
+
+/**
+ * Move to next round
+ */
+export function nextWordRound(): WordRoundData {
+  currentRoundIndex = (currentRoundIndex + 1) % WORD_ROUNDS.length;
+  return getCurrentWordRound();
+}
+
+/**
+ * Reset to first round
+ */
+export function resetWordRounds(): void {
+  currentRoundIndex = 0;
+}
+
+/**
+ * Check if a word can be formed from given letters
+ */
+export function canFormWord(word: string, letters: string[]): boolean {
+  const letterCount = new Map<string, number>();
+
+  // Count available letters
+  for (const letter of letters) {
+    letterCount.set(letter, (letterCount.get(letter) || 0) + 1);
+  }
+
+  // Check if word can be formed
+  for (const char of word) {
+    const count = letterCount.get(char) || 0;
+    if (count === 0) {
+      return false;
+    }
+    letterCount.set(char, count - 1);
+  }
+
+  return true;
+}
+
+/**
+ * Validate if the word exists in current round's word list
+ */
+export function isValidWord(word: string): boolean {
+  const round = WORD_ROUNDS[currentRoundIndex];
+  return round.words.includes(word.toUpperCase());
+}
+
+/**
+ * Get word length for scoring
+ */
+export function getWordScore(word: string): number {
+  const length = word.length;
+  if (length >= 9) return 15;
+  if (length === 8) return 12;
+  if (length === 7) return 10;
+  if (length === 6) return 8;
+  if (length === 5) return 5;
+  if (length === 4) return 3;
+  return 1;
+}
+
+// Legacy support - re-exporting imported type
+export type { Word };
+
+export const WORDS: Word[] = [];
+
 export const getRandomWord = (): Word => {
-  const randomIndex = Math.floor(Math.random() * WORDS.length);
-  return WORDS[randomIndex];
+  return { word: '', hint: '' };
 };

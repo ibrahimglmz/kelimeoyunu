@@ -1,35 +1,41 @@
 export interface NumberPuzzle {
+    id: number;
+    totalQuestions: number;
     numbers: number[];
     target: number;
     usedNumbers: boolean[];
 }
 
-const SMALL_NUMBERS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-const LARGE_NUMBERS = [25, 50, 75, 100];
+// Sabit matematik soruları - "Bir Kelime Bir İşlem"
+const FIXED_PUZZLES = [
+    { numbers: [10, 5, 2, 5, 7, 50], target: 554 },
+    { numbers: [7, 6, 6, 8, 8, 50], target: 208 },
+    { numbers: [10, 7, 8, 1, 1, 100], target: 153 },
+    { numbers: [9, 9, 5, 5, 7, 75], target: 126 },
+    { numbers: [4, 5, 6, 4, 5, 25], target: 768 },
+    { numbers: [2, 2, 5, 7, 9, 25], target: 608 },
+    { numbers: [7, 9, 1, 4, 5, 75], target: 646 },
+    { numbers: [3, 4, 7, 8, 9, 100], target: 632 },
+    { numbers: [2, 3, 5, 8, 9, 50], target: 346 },
+    { numbers: [3, 4, 4, 7, 8, 25], target: 943 }
+];
+
+let currentPuzzleIndex = 0;
 
 /**
  * Generate a new Bir İşlem puzzle with 6 numbers and a target
  */
 export function generateNumberPuzzle(): NumberPuzzle {
-    const numbers: number[] = [];
-
-    // Select 2 large numbers
-    const shuffledLarge = [...LARGE_NUMBERS].sort(() => Math.random() - 0.5);
-    numbers.push(shuffledLarge[0], shuffledLarge[1]);
-
-    // Select 4 small numbers
-    const shuffledSmall = [...SMALL_NUMBERS].sort(() => Math.random() - 0.5);
-    numbers.push(...shuffledSmall.slice(0, 4));
-
-    // Shuffle all 6 numbers
-    numbers.sort(() => Math.random() - 0.5);
-
-    // Generate target number (100-999)
-    const target = Math.floor(Math.random() * 900) + 100;
+    const puzzle = FIXED_PUZZLES[currentPuzzleIndex];
+    const questionNumber = currentPuzzleIndex + 1;
+    const totalQuestions = FIXED_PUZZLES.length;
+    currentPuzzleIndex = (currentPuzzleIndex + 1) % FIXED_PUZZLES.length;
 
     return {
-        numbers,
-        target,
+        id: questionNumber,
+        totalQuestions: totalQuestions,
+        numbers: [...puzzle.numbers],
+        target: puzzle.target,
         usedNumbers: new Array(6).fill(false)
     };
 }

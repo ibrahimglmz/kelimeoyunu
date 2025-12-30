@@ -13,6 +13,8 @@ import { GameButton } from './GameButton';
 import { SuccessMessage } from './SuccessMessage';
 import { AlertMessage } from './AlertMessage';
 
+import { useGameSound } from '../hooks/useGameSound';
+
 export function OperationGame() {
     const [puzzle, setPuzzle] = useState<NumberPuzzle>(() => generateNumberPuzzle());
     const [expression, setExpression] = useState('');
@@ -26,6 +28,11 @@ export function OperationGame() {
     const [isAnswered, setIsAnswered] = useState(false);
     const [currentResult, setCurrentResult] = useState<number | null>(null);
     const [jokerUsed, setJokerUsed] = useState(false);
+
+    // Background music - playing when timer is active
+    useGameSound('/sounds/game-music.mp3', isTimerActive, 0.4);
+    // Timer sound
+    useGameSound('/sounds/timer-tick.mp3', isTimerActive, 0.2);
 
     // Timer effect
     useEffect(() => {
@@ -220,6 +227,18 @@ export function OperationGame() {
                     transition={{ delay: 0.3 }}
                     className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-2xl border border-gray-700"
                 >
+                    {/* Question Number */}
+                    <div className="mb-2 text-center">
+                        <p className="text-gray-400 text-sm mb-1">SORU</p>
+                        <motion.p
+                            initial={{ scale: 0.9 }}
+                            animate={{ scale: 1 }}
+                            className="text-2xl font-bold text-purple-400"
+                        >
+                            {puzzle.id} / {puzzle.totalQuestions}
+                        </motion.p>
+                    </div>
+
                     {/* Target Number */}
                     <div className="mb-8 text-center">
                         <p className="text-gray-400 text-sm mb-2">HEDEF SAYI</p>
@@ -245,8 +264,8 @@ export function OperationGame() {
                                     onClick={() => handleNumberClick(number, index)}
                                     disabled={usedIndices.has(index) || timeLeft === 0 || isAnswered}
                                     className={`w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center rounded-xl text-2xl sm:text-3xl font-bold shadow-lg transition-all ${usedIndices.has(index)
-                                            ? 'bg-gray-600 text-gray-400 cursor-not-allowed opacity-50'
-                                            : 'bg-gradient-to-br from-purple-500 to-purple-700 text-white hover:scale-110 hover:shadow-xl cursor-pointer'
+                                        ? 'bg-gray-600 text-gray-400 cursor-not-allowed opacity-50'
+                                        : 'bg-gradient-to-br from-purple-500 to-purple-700 text-white hover:scale-110 hover:shadow-xl cursor-pointer'
                                         }`}
                                 >
                                     {number}
