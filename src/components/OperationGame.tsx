@@ -1,62 +1,84 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { RefreshCw, Send, Star } from 'lucide-react';
-import { OPERATIONS, OperationQuestion } from '../data/operations';
+import { RefreshCw, Send, Star, Timer } from 'lucide-react';
+import { getRandomMathQuestion, MathQuestion } from '../data/mathQuestions';
 import { GameButton } from './GameButton';
 import { SuccessMessage } from './SuccessMessage';
 import { AlertMessage } from './AlertMessage';
 
 export function OperationGame() {
-    const [currentQuestion, setCurrentQuestion] = useState<OperationQuestion>(() => {
-        const randomIndex = Math.floor(Math.random() * OPERATIONS.length);
-        return OPERATIONS[randomIndex];
-    });
-
-    const [userResult, setUserResult] = useState('');
+    const [currentQuestion, setCurrentQuestion] = useState<MathQuestion>(() => getRandomMathQuestion());
+    const [userAnswer, setUserAnswer] = useState('');
     const [score, setScore] = useState(0);
     const [showSuccess, setShowSuccess] = useState(false);
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
+    const [timeLeft, setTimeLeft] = useState(60);
+    const [isTimerActive, setIsTimerActive] = useState(true);
+    const [isAnswered, setIsAnswered] = useState(false);
+    const [showCorrectAnswer, setShowCorrectAnswer] = useState(false);
+
+    // Timer effect
+    useEffect(() => {
+        let interval: NodeJS.Timeout;
+        if (isTimerActive && timeLeft > 0 && !isAnswered) {
+            interval = setInterval(() => {
+                setTimeLeft((prev) => prev - 1);
+            }, 1000);
+        } else if (timeLeft === 0 && !isAnswered) {
+            setIsTimerActive(false);
+            setShowCorrectAnswer(true);
+            setAlertMessage(`Süre doldu! Doğru cevap: ${currentQuestion.answer}`);
+            setShowAlert(true);
+            setTimeout(() => setShowAlert(false), 4000);
+        }
+        return () => clearInterval(interval);
+    }, [isTimerActive, timeLeft, isAnswered, currentQuestion.answer]);
 
     const handleGuess = () => {
-        const result = parseInt(userResult);
+        if (timeLeft === 0 || isAnswered) return;
 
-        if (isNaN(result)) {
+        const answer = parseInt(userAnswer);
+
+        if (isNaN(answer)) {
             setAlertMessage('Lütfen geçerli bir sayı girin.');
             setShowAlert(true);
             setTimeout(() => setShowAlert(false), 2000);
             return;
         }
 
-        const difference = Math.abs(result - currentQuestion.target);
+        setIsAnswered(true);
+        setIsTimerActive(false);
 
-        if (difference === 0) {
-            setScore(score + 10);
-            setAlertMessage('Tam İsabet! Hedef sayıya ulaştınız!');
+        if (answer === currentQuestion.answer) {
+            const timeBonus = Math.floor(timeLeft / 2);
+            const totalPoints = 10 + timeBonus;
+            setScore(score + totalPoints);
+            setAlertMessage(`Doğru! +${totalPoints} puan (${timeBonus} zaman bonusu)`);
             setShowSuccess(true);
             setTimeout(() => setShowSuccess(false), 3000);
-        } else if (difference <= 5) {
-            setScore(score + 5);
-            setAlertMessage(`Çok yaklaştınız! Fark: ${difference}. (+5 puan)`);
+        } else {
+            setShowCorrectAnswer(true);
+            setAlertMessage(`Yanlış! Doğru cevap: ${currentQuestion.answer}`);
             setShowAlert(true);
             setTimeout(() => setShowAlert(false), 3000);
-        } else {
-            setAlertMessage(`Maalesef yaklaşamadınız. Fark: ${difference}.`);
-            setShowAlert(true);
-            setTimeout(() => setShowAlert(false), 2000);
         }
     };
 
     const handleNewGame = () => {
-        const randomIndex = Math.floor(Math.random() * OPERATIONS.length);
-        setCurrentQuestion(OPERATIONS[randomIndex]);
-        setUserResult('');
+        setCurrentQuestion(getRandomMathQuestion());
+        setUserAnswer('');
         setShowSuccess(false);
+        setShowAlert(false);
+        setTimeLeft(60);
+        setIsTimerActive(true);
+        setIsAnswered(false);
+        setShowCorrectAnswer(false);
     };
 
     return (
         <>
-            <SuccessMessage show={showSuccess} message="Hedef sayıya ulaştınız! 🎉" />
+            <SuccessMessage show={showSuccess} message={alertMessage} />
             <AlertMessage show={showAlert} message={alertMessage} />
 
             <motion.div
@@ -64,20 +86,22 @@ export function OperationGame() {
                 animate={{ opacity: 1, y: 0 }}
                 className="max-w-4xl w-full"
             >
-                <motion.div
-                    initial={{ scale: 0.9 }}
-                    animate={{ scale: 1 }}
-                    className="text-center mb-8"
-                >
+                <div className="flex justify-between items-center mb-8 px-4">
                     <motion.div
                         animate={{ scale: [1, 1.1, 1] }}
                         transition={{ duration: 2, repeat: Infinity }}
-                        className="inline-flex items-center gap-2 bg-yellow-500 text-gray-900 px-6 py-3 rounded-full font-bold text-xl shadow-lg"
+                        className="inline-flex items-center gap-2 bg-yellow-500 text-gray-900 px-6 py-2 rounded-full font-bold text-lg shadow-lg"
                     >
-                        <Star size={24} fill="currentColor" />
-                        Skor: {score}
+                        <Star size={20} fill="currentColor" />
+                        <span>{score}</span>
                     </motion.div>
-                </motion.div>
+
+                    <div className={`inline-flex items-center gap-2 px-6 py-2 rounded-full font-bold text-lg shadow-lg ${timeLeft <= 10 ? 'bg-red-500 animate-pulse' : 'bg-purple-600'
+                        } text-white`}>
+                        <Timer size={20} />
+                        <span>{timeLeft}s</span>
+                    </div>
+                </div>
 
                 <motion.div
                     initial={{ opacity: 0 }}
@@ -86,31 +110,40 @@ export function OperationGame() {
                     className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-2xl border border-gray-700"
                 >
                     <div className="mb-8 text-center">
-                        <p className="text-gray-400 text-sm mb-2">HEDEF SAYI</p>
-                        <p className="text-6xl font-bold text-blue-400 mb-8">{currentQuestion.target}</p>
+                        <p className="text-gray-400 text-sm mb-4">MATEMATİK SORUSU</p>
+                        <motion.p
+                            initial={{ scale: 0.9 }}
+                            animate={{ scale: 1 }}
+                            className="text-4xl sm:text-5xl font-bold text-purple-400 mb-6"
+                        >
+                            {currentQuestion.question}
+                        </motion.p>
 
-                        <div className="flex flex-wrap justify-center gap-4 mb-8">
-                            {currentQuestion.numbers.map((num, idx) => (
-                                <div key={idx} className="w-16 h-16 bg-gray-700 rounded-xl flex items-center justify-center text-2xl font-bold text-white shadow-lg border border-gray-600">
-                                    {num}
-                                </div>
-                            ))}
-                        </div>
+                        {showCorrectAnswer && (
+                            <motion.div
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="text-3xl font-bold text-red-500 mt-4"
+                            >
+                                Cevap: {currentQuestion.answer}
+                            </motion.div>
+                        )}
                     </div>
 
                     <div className="space-y-6">
                         <div>
-                            <label htmlFor="result" className="block text-sm font-medium text-gray-300 mb-2">
-                                Bulduğunuz Sayı
+                            <label htmlFor="answer" className="block text-sm font-medium text-gray-300 mb-2">
+                                Cevabınız
                             </label>
                             <input
-                                id="result"
+                                id="answer"
                                 type="number"
-                                value={userResult}
-                                onChange={(e) => setUserResult(e.target.value)}
+                                value={userAnswer}
+                                onChange={(e) => setUserAnswer(e.target.value)}
                                 onKeyPress={(e) => e.key === 'Enter' && handleGuess()}
-                                placeholder="Sonuç..."
-                                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-white placeholder-gray-400 transition-all text-center text-xl"
+                                disabled={timeLeft === 0 || isAnswered}
+                                placeholder="Cevabınızı yazın..."
+                                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none text-white placeholder-gray-400 transition-all text-center text-xl disabled:opacity-50 disabled:cursor-not-allowed"
                             />
                         </div>
 
@@ -118,9 +151,9 @@ export function OperationGame() {
                             <GameButton
                                 onClick={handleGuess}
                                 icon={Send}
-                                label="Kontrol Et"
+                                label="Cevapla"
                                 variant="success"
-                                disabled={!userResult}
+                                disabled={!userAnswer || timeLeft === 0 || isAnswered}
                             />
                             <GameButton
                                 onClick={handleNewGame}
@@ -130,6 +163,18 @@ export function OperationGame() {
                             />
                         </div>
                     </div>
+
+                    {isAnswered && !showCorrectAnswer && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="mt-6 text-center"
+                        >
+                            <p className="text-green-400 text-lg font-semibold">
+                                +{10 + Math.floor(timeLeft / 2)} puan kazandınız!
+                            </p>
+                        </motion.div>
+                    )}
                 </motion.div>
 
                 <motion.div
@@ -138,7 +183,7 @@ export function OperationGame() {
                     transition={{ delay: 0.5 }}
                     className="mt-8 text-center text-gray-400 text-sm"
                 >
-                    <p>Verilen 6 sayıyı kullanarak (+, -, *, /) hedef sayıya ulaşmaya çalışın.</p>
+                    <p>Matematik sorusunu çözün. Her soru için 60 saniyeniz var!</p>
                 </motion.div>
             </motion.div>
         </>

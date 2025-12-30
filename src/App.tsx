@@ -19,8 +19,8 @@ function App() {
         <button
           onClick={() => setGameMode('word')}
           className={`px-6 py-3 rounded-full font-bold transition-all duration-300 ${gameMode === 'word'
-              ? 'bg-blue-600 text-white shadow-lg scale-105'
-              : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+            ? 'bg-blue-600 text-white shadow-lg scale-105'
+            : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
             }`}
         >
           Kelime Oyunu
@@ -28,11 +28,11 @@ function App() {
         <button
           onClick={() => setGameMode('operation')}
           className={`px-6 py-3 rounded-full font-bold transition-all duration-300 ${gameMode === 'operation'
-              ? 'bg-purple-600 text-white shadow-lg scale-105'
-              : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+            ? 'bg-purple-600 text-white shadow-lg scale-105'
+            : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
             }`}
         >
-          Bir İşlem
+          Matematik
         </button>
       </motion.div>
 
