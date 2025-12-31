@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { RefreshCw, Send, Star, Timer, Lightbulb } from 'lucide-react';
+import { Send, Star, Timer, RefreshCw } from 'lucide-react';
 import { getCurrentWordRound, nextWordRound, canFormWord, isValidWord, getWordScore, getTotalRounds } from '../data/words';
 import { GameButton } from './GameButton';
 import { SuccessMessage } from './SuccessMessage';
@@ -18,9 +18,13 @@ export function WordGame() {
     const [alertMessage, setAlertMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const [timeLeft, setTimeLeft] = useState(90);
-    const [jokerCount, setJokerCount] = useState(3);
     const [isTimerActive, setIsTimerActive] = useState(true);
 
+    // Joker state: map index of '?' to the user-selected char
+    // The joker is identified by its value '?' in the currentRound.letters array
+    const [jokerValue, setJokerValue] = useState<string | null>(null);
+    const [isSelectingJoker, setIsSelectingJoker] = useState(false);
+    const [jokerInput, setJokerInput] = useState('');
 
     // Background music - playing when timer is active
     useGameSound('/sounds/game-music.mp3', isTimerActive, 0.4);
@@ -43,6 +47,10 @@ export function WordGame() {
         return () => clearInterval(interval);
     }, [isTimerActive, timeLeft, foundWords.length]);
 
+    const getEffectiveLetters = () => {
+        return currentRound.letters.map(l => l === '?' && jokerValue ? jokerValue : l);
+    };
+
     const handleGuess = () => {
         if (timeLeft === 0 || !guess.trim()) return;
 
@@ -57,8 +65,9 @@ export function WordGame() {
             return;
         }
 
-        // Check if can be formed from letters
-        if (!canFormWord(normalizedGuess, currentRound.letters)) {
+        // Check if can be formed from letters (using effective letters with joker resolved)
+        const effectiveLetters = getEffectiveLetters();
+        if (!canFormWord(normalizedGuess, effectiveLetters)) {
             setAlertMessage('Bu kelime verilen harflerden oluşturulamaz!');
             setShowAlert(true);
             setTimeout(() => setShowAlert(false), 2000);
@@ -92,6 +101,9 @@ export function WordGame() {
         setFoundWords([]);
         setTimeLeft(90);
         setIsTimerActive(true);
+        setJokerValue(null);
+        setIsSelectingJoker(false);
+        setJokerInput('');
     };
 
     const handleSkipRound = () => {
@@ -103,27 +115,16 @@ export function WordGame() {
         }, 2000);
     };
 
-    const handleJoker = () => {
-        if (jokerCount <= 0 || timeLeft === 0) return;
+    const handleJokerClick = () => {
+        setIsSelectingJoker(true);
+    };
 
-        const availableWords = currentRound.availableWords.filter(
-            word => !foundWords.includes(word)
-        );
-
-        if (availableWords.length === 0) {
-            setAlertMessage('Tüm kelimeler bulundu!');
-            setShowAlert(true);
-            setTimeout(() => setShowAlert(false), 2000);
-            return;
+    const confirmJokerSelection = () => {
+        if (jokerInput && jokerInput.length === 1) {
+            setJokerValue(jokerInput.toUpperCase());
+            setIsSelectingJoker(false);
+            setJokerInput('');
         }
-
-        const randomWord = availableWords[Math.floor(Math.random() * availableWords.length)];
-
-        setFoundWords([...foundWords, randomWord]);
-        setJokerCount(prev => prev - 1);
-        setAlertMessage(`Joker Kullanıldı: ${randomWord}`);
-        setShowAlert(true);
-        setTimeout(() => setShowAlert(false), 2000);
     };
 
     return (
@@ -175,18 +176,57 @@ export function WordGame() {
                     <div className="mb-8 text-center">
                         <p className="text-gray-400 text-sm mb-4">HARFLER</p>
                         <div className="flex flex-wrap justify-center gap-2 mb-2">
-                            {currentRound.letters.map((char, idx) => (
-                                <motion.div
-                                    key={`${char}-${idx}`}
-                                    initial={{ scale: 0, rotate: -180 }}
-                                    animate={{ scale: 1, rotate: 0 }}
-                                    transition={{ delay: idx * 0.05 }}
-                                    className="w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl text-2xl sm:text-3xl font-bold text-white shadow-lg border-2 border-blue-300"
-                                >
-                                    {char}
-                                </motion.div>
-                            ))}
+                            {currentRound.letters.map((char, idx) => {
+                                const isJoker = char === '?';
+                                const displayChar = isJoker && jokerValue ? jokerValue : char;
+                                const isFilledJoker = isJoker && jokerValue;
+
+                                return (
+                                    <motion.div
+                                        key={`${char}-${idx}`}
+                                        initial={{ scale: 0, rotate: -180 }}
+                                        animate={{
+                                            scale: 1,
+                                            rotate: 0,
+                                            backgroundColor: isFilledJoker ? '#10B981' : undefined // Green if filled joker
+                                        }}
+                                        transition={{ delay: idx * 0.05 }}
+                                        onClick={isJoker ? handleJokerClick : undefined}
+                                        className={`w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center rounded-xl text-2xl sm:text-3xl font-bold text-white shadow-lg border-2 border-blue-300 ${isJoker
+                                                ? 'cursor-pointer hover:scale-110 transition-transform bg-purple-600 border-purple-300'
+                                                : 'bg-gradient-to-br from-blue-500 to-blue-700'
+                                            } ${isFilledJoker ? 'bg-green-600 !border-green-300' : ''}`}
+                                    >
+                                        {displayChar}
+                                    </motion.div>
+                                )
+                            })}
                         </div>
+                        {isSelectingJoker && (
+                            <div className="mt-4 flex justify-center items-center gap-2 animate-fadeIn">
+                                <input
+                                    autoFocus
+                                    className="w-16 h-10 rounded text-center text-black font-bold uppercase"
+                                    maxLength={1}
+                                    placeholder="?"
+                                    value={jokerInput}
+                                    onChange={(e) => setJokerInput(e.target.value.toUpperCase())}
+                                    onKeyDown={(e) => e.key === 'Enter' && confirmJokerSelection()}
+                                />
+                                <button
+                                    onClick={confirmJokerSelection}
+                                    className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded font-bold"
+                                >
+                                    Seç
+                                </button>
+                                <button
+                                    onClick={() => setIsSelectingJoker(false)}
+                                    className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded font-bold"
+                                >
+                                    İptal
+                                </button>
+                            </div>
+                        )}
                     </div>
 
                     {/* Found Words */}
@@ -240,13 +280,6 @@ export function WordGame() {
                                 label="Sonraki Tur"
                                 variant="secondary"
                             />
-                            <GameButton
-                                onClick={handleJoker}
-                                icon={Lightbulb}
-                                label={`Joker (${jokerCount})`}
-                                variant="warning"
-                                disabled={jokerCount <= 0 || timeLeft === 0}
-                            />
 
                         </div>
                     </div>
@@ -276,3 +309,4 @@ export function WordGame() {
         </>
     );
 }
+
