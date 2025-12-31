@@ -5,7 +5,7 @@ interface GameButtonProps {
   onClick: () => void;
   icon: LucideIcon;
   label: string;
-  variant?: 'primary' | 'secondary' | 'success';
+  variant?: 'primary' | 'secondary' | 'success' | 'warning';
   disabled?: boolean;
 }
 
@@ -19,7 +19,8 @@ export const GameButton = ({
   const variantStyles = {
     primary: 'bg-blue-600 hover:bg-blue-700',
     secondary: 'bg-gray-700 hover:bg-gray-600',
-    success: 'bg-green-600 hover:bg-green-700'
+    success: 'bg-green-600 hover:bg-green-700',
+    warning: 'bg-yellow-600 hover:bg-yellow-700'
   };
 
   return (

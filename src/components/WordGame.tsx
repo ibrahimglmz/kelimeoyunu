@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { RefreshCw, Send, Star, Timer } from 'lucide-react';
-import { getCurrentWordRound, nextWordRound, canFormWord, isValidWord, getWordScore } from '../data/words';
+import { RefreshCw, Send, Star, Timer, Lightbulb } from 'lucide-react';
+import { getCurrentWordRound, nextWordRound, canFormWord, isValidWord, getWordScore, getTotalRounds } from '../data/words';
 import { GameButton } from './GameButton';
 import { SuccessMessage } from './SuccessMessage';
 import { AlertMessage } from './AlertMessage';
@@ -18,7 +18,9 @@ export function WordGame() {
     const [alertMessage, setAlertMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const [timeLeft, setTimeLeft] = useState(90);
+    const [jokerCount, setJokerCount] = useState(3);
     const [isTimerActive, setIsTimerActive] = useState(true);
+
 
     // Background music - playing when timer is active
     useGameSound('/sounds/game-music.mp3', isTimerActive, 0.4);
@@ -101,6 +103,29 @@ export function WordGame() {
         }, 2000);
     };
 
+    const handleJoker = () => {
+        if (jokerCount <= 0 || timeLeft === 0) return;
+
+        const availableWords = currentRound.availableWords.filter(
+            word => !foundWords.includes(word)
+        );
+
+        if (availableWords.length === 0) {
+            setAlertMessage('Tüm kelimeler bulundu!');
+            setShowAlert(true);
+            setTimeout(() => setShowAlert(false), 2000);
+            return;
+        }
+
+        const randomWord = availableWords[Math.floor(Math.random() * availableWords.length)];
+
+        setFoundWords([...foundWords, randomWord]);
+        setJokerCount(prev => prev - 1);
+        setAlertMessage(`Joker Kullanıldı: ${randomWord}`);
+        setShowAlert(true);
+        setTimeout(() => setShowAlert(false), 2000);
+    };
+
     return (
         <>
             <SuccessMessage show={showSuccess} message={successMessage} />
@@ -142,7 +167,7 @@ export function WordGame() {
                             animate={{ scale: 1 }}
                             className="text-4xl font-bold text-blue-400"
                         >
-                            {currentRound.roundNumber} / 20
+                            {currentRound.roundNumber} / {getTotalRounds()}
                         </motion.p>
                     </div>
 
@@ -215,6 +240,14 @@ export function WordGame() {
                                 label="Sonraki Tur"
                                 variant="secondary"
                             />
+                            <GameButton
+                                onClick={handleJoker}
+                                icon={Lightbulb}
+                                label={`Joker (${jokerCount})`}
+                                variant="warning"
+                                disabled={jokerCount <= 0 || timeLeft === 0}
+                            />
+
                         </div>
                     </div>
 
@@ -239,7 +272,7 @@ export function WordGame() {
                 >
                     <p>Verilen harflerden kelimeler oluşturun. Her tur için 90 saniyeniz var!</p>
                 </motion.div>
-            </motion.div>
+            </motion.div >
         </>
     );
 }
