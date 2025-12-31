@@ -120,16 +120,4 @@ export function calculateScore(result: number, target: number, timeBonus: number
     }
 }
 
-/**
- * Generate a hint by providing a simple operation that gets closer to target
- */
-export function generateHint(numbers: number[], target: number): string {
-    // Simple hint: suggest using the two largest numbers
-    const sorted = [...numbers].sort((a, b) => b - a);
 
-    if (target > 100) {
-        return `İpucu: Büyük sayıları çarpmayı dene (${sorted[0]} × ${sorted[1]})`;
-    } else {
-        return `İpucu: ${sorted[0]} + ${sorted[1]} = ${sorted[0] + sorted[1]}`;
-    }
-}

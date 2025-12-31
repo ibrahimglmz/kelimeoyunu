@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { RefreshCw, Send, Star, Timer, Delete, Lightbulb } from 'lucide-react';
+import { RefreshCw, Send, Star, Timer, Delete } from 'lucide-react';
 import {
     generateNumberPuzzle,
     evaluateExpression,
     validateNumberUsage,
     calculateScore,
-    generateHint,
     NumberPuzzle
 } from '../data/mathQuestions';
 import { GameButton } from './GameButton';
@@ -27,7 +26,6 @@ export function OperationGame() {
     const [isTimerActive, setIsTimerActive] = useState(true);
     const [isAnswered, setIsAnswered] = useState(false);
     const [currentResult, setCurrentResult] = useState<number | null>(null);
-    const [jokerUsed, setJokerUsed] = useState(false);
 
     // Background music - playing when timer is active
     useGameSound('/sounds/game-music.mp3', isTimerActive, 0.4);
@@ -162,15 +160,7 @@ export function OperationGame() {
         }
     };
 
-    const handleJoker = () => {
-        if (jokerUsed || timeLeft === 0 || isAnswered) return;
 
-        setJokerUsed(true);
-        const hint = generateHint(puzzle.numbers, puzzle.target);
-        setAlertMessage(hint);
-        setShowAlert(true);
-        setTimeout(() => setShowAlert(false), 5000);
-    };
 
     const handleNewGame = () => {
         setPuzzle(generateNumberPuzzle());
@@ -182,7 +172,6 @@ export function OperationGame() {
         setIsTimerActive(true);
         setIsAnswered(false);
         setCurrentResult(null);
-        setJokerUsed(false);
     };
 
     const getDifferenceColor = () => {
@@ -351,13 +340,7 @@ export function OperationGame() {
                         >
                             Temizle
                         </button>
-                        <GameButton
-                            onClick={handleJoker}
-                            icon={Lightbulb}
-                            label="Joker"
-                            variant="primary"
-                            disabled={jokerUsed || timeLeft === 0 || isAnswered}
-                        />
+
                         <GameButton
                             onClick={handleSubmit}
                             icon={Send}
@@ -373,15 +356,7 @@ export function OperationGame() {
                         />
                     </div>
 
-                    {jokerUsed && (
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="mt-4 text-center text-yellow-400 text-sm"
-                        >
-                            ⭐ Joker kullanıldı
-                        </motion.div>
-                    )}
+
                 </motion.div>
 
                 <motion.div
