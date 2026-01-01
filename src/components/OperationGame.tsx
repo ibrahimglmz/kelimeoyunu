@@ -22,7 +22,7 @@ export function OperationGame() {
     const [showSuccess, setShowSuccess] = useState(false);
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
-    const [timeLeft, setTimeLeft] = useState(60);
+    const [timeLeft, setTimeLeft] = useState(90);
     const [isTimerActive, setIsTimerActive] = useState(true);
     const [isAnswered, setIsAnswered] = useState(false);
     const [currentResult, setCurrentResult] = useState<number | null>(null);
@@ -168,7 +168,7 @@ export function OperationGame() {
         setUsedIndices(new Set());
         setShowSuccess(false);
         setShowAlert(false);
-        setTimeLeft(60);
+        setTimeLeft(90);
         setIsTimerActive(true);
         setIsAnswered(false);
         setCurrentResult(null);

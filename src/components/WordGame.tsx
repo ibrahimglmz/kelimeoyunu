@@ -54,7 +54,7 @@ export function WordGame() {
     const handleGuess = () => {
         if (timeLeft === 0 || !guess.trim()) return;
 
-        const normalizedGuess = guess.toUpperCase().trim();
+        const normalizedGuess = guess.toLocaleUpperCase('tr-TR').trim();
 
         // Check if already found
         if (foundWords.includes(normalizedGuess)) {
@@ -121,7 +121,7 @@ export function WordGame() {
 
     const confirmJokerSelection = () => {
         if (jokerInput && jokerInput.length === 1) {
-            setJokerValue(jokerInput.toUpperCase());
+            setJokerValue(jokerInput.toLocaleUpperCase('tr-TR'));
             setIsSelectingJoker(false);
             setJokerInput('');
         }
@@ -193,8 +193,8 @@ export function WordGame() {
                                         transition={{ delay: idx * 0.05 }}
                                         onClick={isJoker ? handleJokerClick : undefined}
                                         className={`w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center rounded-xl text-2xl sm:text-3xl font-bold text-white shadow-lg border-2 border-blue-300 ${isJoker
-                                                ? 'cursor-pointer hover:scale-110 transition-transform bg-purple-600 border-purple-300'
-                                                : 'bg-gradient-to-br from-blue-500 to-blue-700'
+                                            ? 'cursor-pointer hover:scale-110 transition-transform bg-purple-600 border-purple-300'
+                                            : 'bg-gradient-to-br from-blue-500 to-blue-700'
                                             } ${isFilledJoker ? 'bg-green-600 !border-green-300' : ''}`}
                                     >
                                         {displayChar}
@@ -210,7 +210,7 @@ export function WordGame() {
                                     maxLength={1}
                                     placeholder="?"
                                     value={jokerInput}
-                                    onChange={(e) => setJokerInput(e.target.value.toUpperCase())}
+                                    onChange={(e) => setJokerInput(e.target.value.toLocaleUpperCase('tr-TR'))}
                                     onKeyDown={(e) => e.key === 'Enter' && confirmJokerSelection()}
                                 />
                                 <button
@@ -258,7 +258,7 @@ export function WordGame() {
                                 id="guess"
                                 type="text"
                                 value={guess}
-                                onChange={(e) => setGuess(e.target.value.toUpperCase())}
+                                onChange={(e) => setGuess(e.target.value.toLocaleUpperCase('tr-TR'))}
                                 onKeyPress={(e) => e.key === 'Enter' && handleGuess()}
                                 disabled={timeLeft === 0}
                                 placeholder="Kelimeyi yazın..."

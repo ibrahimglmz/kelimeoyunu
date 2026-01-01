@@ -104,7 +104,7 @@ function normalizeChar(char: string): string {
     .replace(/Ş/g, 'S')
     .replace(/Ö/g, 'O')
     .replace(/Ç/g, 'C')
-    .toUpperCase();
+    .toLocaleUpperCase('tr-TR');
 }
 
 /**
@@ -133,7 +133,7 @@ export function canFormWord(word: string, letters: string[]): boolean {
   }
 
   // Check if word can be formed
-  const normalizedWord = normalizeChar(word.toUpperCase());
+  const normalizedWord = normalizeChar(word.toLocaleUpperCase('tr-TR'));
 
   // Create a copy of counts to simulate consumption
   const currentCounts = new Map(letterCount);
@@ -161,7 +161,7 @@ export function canFormWord(word: string, letters: string[]): boolean {
 export function isValidWord(word: string): boolean {
   const round = WORD_ROUNDS[currentRoundIndex];
   // Strict match on the word list, but maybe case insensitive
-  return round.words.some(w => w.toUpperCase() === word.toUpperCase());
+  return round.words.some(w => w.toLocaleUpperCase('tr-TR') === word.toLocaleUpperCase('tr-TR'));
 }
 
 /**
