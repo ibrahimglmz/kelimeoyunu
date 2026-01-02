@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Send, Star, Timer, RefreshCw } from 'lucide-react';
 import { getCurrentWordRound, nextWordRound, canFormWord, isValidWord, getWordScore, getTotalRounds } from '../data/words';
@@ -9,6 +9,7 @@ import { AlertMessage } from './AlertMessage';
 import { useGameSound } from '../hooks/useGameSound';
 
 export function WordGame() {
+    const inputRef = useRef<HTMLInputElement>(null);
     const [currentRound, setCurrentRound] = useState(() => getCurrentWordRound());
     const [guess, setGuess] = useState('');
     const [score, setScore] = useState(0);
@@ -124,6 +125,10 @@ export function WordGame() {
             setJokerValue(jokerInput.toLocaleUpperCase('tr-TR'));
             setIsSelectingJoker(false);
             setJokerInput('');
+            // Focus back to input after small delay to allow UI to update
+            setTimeout(() => {
+                inputRef.current?.focus();
+            }, 100);
         }
     };
 
@@ -255,6 +260,7 @@ export function WordGame() {
                                 Kelime Girin
                             </label>
                             <input
+                                ref={inputRef}
                                 id="guess"
                                 type="text"
                                 value={guess}
@@ -309,4 +315,3 @@ export function WordGame() {
         </>
     );
 }
-

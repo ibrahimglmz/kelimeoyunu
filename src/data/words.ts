@@ -10,11 +10,11 @@ export interface WordRound {
 const WORD_ROUNDS: WordRound[] = [
   {
     letters: ["A", "K", "E", "L", "I", "M", "O", "T", "?"],
-    words: ["METABOLİK", "MELODİKA", "MELODİK", "METALİK", "KATOLİK", "AMELİYE", "MELODİ", "TEKİLA", "KALİTE", "MELİKE", "ETİMOL", "EMLAK", "METİL", "TEKİL", "KAMET", "MOTEL", "LOKMA"]
+    words: ["METABOLİK", "MELODİKA", "MELODİK", "METALİK", "KATOLİK", "AMELİYE", "MELODİ", "TEKİLA", "KALİTE", "MELİKE", "ETİMOL", "EMLAK", "METİL", "TEKİL", "KAMET", "MOTEL", "LOKMA", "MARKET", "KELİME"]
   },
   {
     letters: ["M", "E", "R", "K", "E", "T", "I", "?"],
-    words: ["KERETİN", "MERTEK", "MERKEZ", "METRİK", "MİKTAR", "TEKMİL", "KERTME", "NETİCE", "TERİM", "TEKER", "METRE", "METİN", "İTMEK", "KEREM"]
+    words: ["KERETİN", "MERTEK", "MERKEZ", "METRİK", "MİKTAR", "TEKMİL", "KERTME", "NETİCE", "TERİM", "TEKER", "METRE", "METİN", "İTMEK", "KEREM", "MARKET", "TEKİR", "TERKİ", "ERİMEK", "EMEK", "ETEK", "KEME", "KERE", "TEKE", "ERİM", "EKİM", "ETKİ"]
   },
   {
     letters: ["D", "E", "I", "Z", "I", "R", "N", "E", "?"],
@@ -22,7 +22,7 @@ const WORD_ROUNDS: WordRound[] = [
   },
   {
     letters: ["P", "N", "A", "L", "T", "R", "I", "E", "?"],
-    words: ["PLANETARY", "PANELİST", "PIRLANTA", "PANTERİ", "PLANTER", "ARPLİNE", "PANTER", "NEPTÜN", "REPLİK", "PLANET", "ERİTAN", "PELİN", "PARTİ", "PANEL", "ANTRE", "TALİP", "TERLİ", "LİNET"]
+    words: ["PLANETARY", "PANELİST", "PIRLANTA", "PANTERİ", "PLANTER", "ARPLİNE", "PANTER", "NEPTÜN", "REPLİK", "PLANET", "ERİTAN", "PELİN", "PARTİ", "PANEL", "ANTRE", "TALİP", "TERLİ", "LİNET", "PENALTI"]
   },
   {
     letters: ["G", "E", "N", "C", "K", "E", "L", "I", "?"],
