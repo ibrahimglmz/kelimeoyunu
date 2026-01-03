@@ -10,7 +10,7 @@ export interface WordRound {
 const WORD_ROUNDS: WordRound[] = [
   {
     letters: ["A", "K", "E", "L", "I", "M", "O", "T", "?"],
-    words: ["METABOLİK", "MELODİKA", "MELODİK", "METALİK", "KATOLİK", "AMELİYE", "MELODİ", "TEKİLA", "KALİTE", "MELİKE", "ETİMOL", "EMLAK", "METİL", "TEKİL", "KAMET", "MOTEL", "LOKMA", "MARKET", "KELİME"]
+    words: ["METABOLİK", "MELODİKA", "MELODİK", "METALİK", "KATOLİK", "AMELİYE", "MELODİ", "TEKİLA", "KALİTE", "MELİKE", "ETİMOL", "EMLAK", "METİL", "TEKİL", "KAMET", "MOTEL", "LOKMA", "MARKET", "KELİME", "KALEM"]
   },
   {
     letters: ["M", "E", "R", "K", "E", "T", "I", "?"],
