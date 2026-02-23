@@ -14,7 +14,7 @@ function App() {
       <motion.div
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="w-full max-w-4xl flex justify-center gap-4 mt-8 mb-4 z-10"
+        className="w-full max-w-4xl flex justify-center gap-4 mt-4 mb-4 z-10"
       >
         <button
           onClick={() => setGameMode('word')}

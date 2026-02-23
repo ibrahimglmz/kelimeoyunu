@@ -8,32 +8,28 @@ export interface NumberPuzzle {
 
 // Sabit matematik soruları - "Bir Kelime Bir İşlem"
 const FIXED_PUZZLES = [
-    { numbers: [10, 5, 2, 5, 7, 50], target: 554 },
-    { numbers: [7, 6, 6, 8, 8, 50], target: 208 },
-    { numbers: [10, 7, 8, 1, 1, 100], target: 153 },
-    { numbers: [9, 9, 5, 5, 7, 75], target: 126 },
-    { numbers: [4, 5, 6, 4, 5, 25], target: 768 },
+    { numbers: [1, 3, 5, 7, 8, 12], target: 567 },
+    { numbers: [1, 4, 5, 7, 9, 20], target: 783 },
+    { numbers: [3, 4, 5, 7, 9, 16], target: 719 },
+    { numbers: [3, 3, 7, 8, 10, 100], target: 547 },
+    { numbers: [2, 3, 4, 7, 9, 19], target: 423 },
     { numbers: [2, 2, 5, 7, 9, 25], target: 608 },
     { numbers: [7, 9, 1, 4, 5, 75], target: 646 },
     { numbers: [3, 4, 7, 8, 9, 100], target: 632 },
     { numbers: [2, 3, 5, 8, 9, 50], target: 346 },
-    { numbers: [3, 4, 4, 7, 8, 25], target: 943 }
+    { numbers: [3, 4, 4, 7, 8, 25], target: 745 }
 ];
 
 let currentPuzzleIndex = 0;
 
 /**
- * Generate a new Bir İşlem puzzle with 6 numbers and a target
+ * Get the current Bir İşlem puzzle
  */
-export function generateNumberPuzzle(): NumberPuzzle {
+export function getCurrentNumberPuzzle(): NumberPuzzle {
     const puzzle = FIXED_PUZZLES[currentPuzzleIndex];
-    const questionNumber = currentPuzzleIndex + 1;
-    const totalQuestions = FIXED_PUZZLES.length;
-    currentPuzzleIndex = (currentPuzzleIndex + 1) % FIXED_PUZZLES.length;
-
     return {
-        id: questionNumber,
-        totalQuestions: totalQuestions,
+        id: currentPuzzleIndex + 1,
+        totalQuestions: FIXED_PUZZLES.length,
         numbers: [...puzzle.numbers],
         target: puzzle.target,
         usedNumbers: new Array(6).fill(false)
@@ -41,25 +37,44 @@ export function generateNumberPuzzle(): NumberPuzzle {
 }
 
 /**
+ * Move to next puzzle
+ */
+export function nextNumberPuzzle(): NumberPuzzle {
+    currentPuzzleIndex = (currentPuzzleIndex + 1) % FIXED_PUZZLES.length;
+    return getCurrentNumberPuzzle();
+}
+
+/**
  * Safely evaluate a mathematical expression
  */
 export function evaluateExpression(expression: string): number | null {
+    if (!expression) return null;
     try {
-        // Replace × and ÷ with * and /
-        const normalizedExpr = expression
-            .replace(/×/g, '*')
-            .replace(/÷/g, '/')
-            .replace(/\s/g, '');
+        // Split expression into tokens (numbers and operators)
+        const tokens = expression.trim().split(/\s+/);
+        if (tokens.length === 0) return null;
 
-        // Basic validation - only allow numbers and operators
-        if (!/^[\d+\-*/().]+$/.test(normalizedExpr)) {
-            return null;
+        // Initialize result with the first number
+        let result = parseFloat(tokens[0]);
+        if (isNaN(result)) return null;
+
+        // Process tokens sequentially from left to right
+        for (let i = 1; i < tokens.length; i += 2) {
+            const operator = tokens[i];
+            const nextValue = parseFloat(tokens[i + 1]);
+
+            if (isNaN(nextValue)) break; // Stop if the next value isn't ready
+
+            if (operator === '+') result += nextValue;
+            else if (operator === '-') result -= nextValue;
+            else if (operator === '×' || operator === '*') result *= nextValue;
+            else if (operator === '÷' || operator === '/') {
+                if (nextValue === 0) return null;
+                result /= nextValue;
+            }
         }
 
-        // Evaluate using Function constructor (safer than eval)
-        const result = new Function(`return ${normalizedExpr}`)();
-
-        return typeof result === 'number' && !isNaN(result) ? Math.round(result) : null;
+        return Math.round(result);
     } catch {
         return null;
     }

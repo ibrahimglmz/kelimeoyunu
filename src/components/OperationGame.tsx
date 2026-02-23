@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { RefreshCw, Send, Star, Timer, Delete } from 'lucide-react';
 import {
-    generateNumberPuzzle,
+    getCurrentNumberPuzzle,
+    nextNumberPuzzle,
     evaluateExpression,
     validateNumberUsage,
     calculateScore,
@@ -15,7 +16,7 @@ import { AlertMessage } from './AlertMessage';
 import { useGameSound } from '../hooks/useGameSound';
 
 export function OperationGame() {
-    const [puzzle, setPuzzle] = useState<NumberPuzzle>(() => generateNumberPuzzle());
+    const [puzzle, setPuzzle] = useState<NumberPuzzle>(() => getCurrentNumberPuzzle());
     const [expression, setExpression] = useState('');
     const [usedIndices, setUsedIndices] = useState<Set<number>>(new Set());
     const [score, setScore] = useState(0);
@@ -80,10 +81,7 @@ export function OperationGame() {
         setExpression(prev => prev + ' ' + operator + ' ');
     };
 
-    const handleParenthesis = (paren: string) => {
-        if (timeLeft === 0 || isAnswered) return;
-        setExpression(prev => prev + paren);
-    };
+
 
     const handleBackspace = () => {
         if (timeLeft === 0 || isAnswered || !expression) return;
@@ -163,7 +161,7 @@ export function OperationGame() {
 
 
     const handleNewGame = () => {
-        setPuzzle(generateNumberPuzzle());
+        setPuzzle(nextNumberPuzzle());
         setExpression('');
         setUsedIndices(new Set());
         setShowSuccess(false);
@@ -194,7 +192,7 @@ export function OperationGame() {
                 className="max-w-4xl w-full"
                 translate="no"
             >
-                <div className="flex justify-between items-center mb-8 px-4">
+                <div className="flex justify-between items-center mb-4 px-4">
                     <motion.div
                         animate={{ scale: [1, 1.1, 1] }}
                         transition={{ duration: 2, repeat: Infinity }}
@@ -215,7 +213,7 @@ export function OperationGame() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.3 }}
-                    className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-2xl border border-gray-700"
+                    className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-4 sm:p-6 shadow-2xl border border-gray-700"
                 >
                     {/* Question Number */}
                     <div className="mb-2 text-center">
@@ -230,19 +228,19 @@ export function OperationGame() {
                     </div>
 
                     {/* Target Number */}
-                    <div className="mb-8v text-center">
+                    <div className="mb-4 text-center">
                         <p className="text-gray-400 text-sm mb-2">HEDEF SAYI</p>
                         <motion.p
                             initial={{ scale: 0.9 }}
                             animate={{ scale: 1 }}
-                            className="text-6xl font-bold text-purple-400 mb-4"
+                            className="text-5xl sm:text-6xl font-bold text-purple-400 mb-2"
                         >
                             {puzzle.target}
                         </motion.p>
                     </div>
 
-                    {/* Available Numbers */}
-                    <div className="mb-6">
+                    <div className="mb-4">
+                        <p className="text-gray-400 text-sm mb-2 text-center">KULLANILACAK SAYILAR</p>
                         <div className="flex flex-wrap justify-center gap-3">
                             {puzzle.numbers.map((number, index) => (
                                 <motion.button
@@ -267,9 +265,25 @@ export function OperationGame() {
                     <div className="mb-6">
                         <div className="bg-gray-900 rounded-lg p-4 min-h-[80px] border-2 border-purple-500/30">
                             <p className="text-gray-400 text-xs mb-2">İŞLEMİNİZ</p>
-                            <p className="text-white text-2xl font-mono break-all">
-                                {expression || <span className="text-gray-600">Sayıları ve işlemleri seçin...</span>}
-                            </p>
+                            <div className="flex flex-wrap gap-2 items-center">
+                                {expression ? (
+                                    expression.trim().split(' ').map((token, idx) => (
+                                        <motion.span
+                                            key={idx}
+                                            initial={{ scale: 0.8, opacity: 0 }}
+                                            animate={{ scale: 1, opacity: 1 }}
+                                            className={`px-3 py-1 rounded-lg text-xl font-bold ${['+', '-', '×', '÷'].includes(token)
+                                                ? 'bg-blue-600/30 text-blue-400 border border-blue-500/50'
+                                                : 'bg-purple-600/30 text-purple-400 border border-purple-500/50'
+                                                }`}
+                                        >
+                                            {token}
+                                        </motion.span>
+                                    ))
+                                ) : (
+                                    <span className="text-gray-600">Sayıları ve işlemleri seçin...</span>
+                                )}
+                            </div>
                         </div>
                     </div>
 
@@ -293,8 +307,8 @@ export function OperationGame() {
                     )}
 
                     {/* Operators */}
-                    <div className="mb-6">
-                        <p className="text-gray-400 text-sm mb-3 text-center">İŞLEMLER</p>
+                    <div className="mb-4">
+                        <p className="text-gray-400 text-sm mb-2 text-center">İŞLEMLER</p>
                         <div className="flex flex-wrap justify-center gap-3">
                             {['+', '-', '×', '÷'].map((op) => (
                                 <button
@@ -306,20 +320,6 @@ export function OperationGame() {
                                     {op}
                                 </button>
                             ))}
-                            <button
-                                onClick={() => handleParenthesis('(')}
-                                disabled={timeLeft === 0 || isAnswered}
-                                className="w-14 h-14 bg-gray-600 hover:bg-gray-700 text-white text-2xl font-bold rounded-lg shadow-lg transition-all hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                (
-                            </button>
-                            <button
-                                onClick={() => handleParenthesis(')')}
-                                disabled={timeLeft === 0 || isAnswered}
-                                className="w-14 h-14 bg-gray-600 hover:bg-gray-700 text-white text-2xl font-bold rounded-lg shadow-lg transition-all hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                )
-                            </button>
                         </div>
                     </div>
 
