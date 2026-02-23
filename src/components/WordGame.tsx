@@ -141,6 +141,7 @@ export function WordGame() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="max-w-4xl w-full"
+                translate="no"
             >
                 <div className="flex justify-between items-center mb-8 px-4">
                     <motion.div

@@ -22,7 +22,7 @@ export function OperationGame() {
     const [showSuccess, setShowSuccess] = useState(false);
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
-    const [timeLeft, setTimeLeft] = useState(90);
+    const [timeLeft, setTimeLeft] = useState(120);
     const [isTimerActive, setIsTimerActive] = useState(true);
     const [isAnswered, setIsAnswered] = useState(false);
     const [currentResult, setCurrentResult] = useState<number | null>(null);
@@ -168,7 +168,7 @@ export function OperationGame() {
         setUsedIndices(new Set());
         setShowSuccess(false);
         setShowAlert(false);
-        setTimeLeft(90);
+        setTimeLeft(120);
         setIsTimerActive(true);
         setIsAnswered(false);
         setCurrentResult(null);
@@ -192,6 +192,7 @@ export function OperationGame() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="max-w-4xl w-full"
+                translate="no"
             >
                 <div className="flex justify-between items-center mb-8 px-4">
                     <motion.div
@@ -229,7 +230,7 @@ export function OperationGame() {
                     </div>
 
                     {/* Target Number */}
-                    <div className="mb-8 text-center">
+                    <div className="mb-8v text-center">
                         <p className="text-gray-400 text-sm mb-2">HEDEF SAYI</p>
                         <motion.p
                             initial={{ scale: 0.9 }}
@@ -242,7 +243,6 @@ export function OperationGame() {
 
                     {/* Available Numbers */}
                     <div className="mb-6">
-                        <p className="text-gray-400 text-sm mb-3 text-center">KULLANILACAK SAYILAR</p>
                         <div className="flex flex-wrap justify-center gap-3">
                             {puzzle.numbers.map((number, index) => (
                                 <motion.button
