@@ -56,6 +56,7 @@ export function WordGame() {
         if (timeLeft === 0 || !guess.trim()) return;
 
         const normalizedGuess = guess.toLocaleUpperCase('tr-TR').trim();
+        const errorMsg = 'Kelime listede bulunamadı lütfen doğru jokeri bulunuz';
 
         // Check if already found
         if (foundWords.includes(normalizedGuess)) {
@@ -66,21 +67,34 @@ export function WordGame() {
             return;
         }
 
-        // Check if can be formed from letters (using effective letters with joker resolved)
+        // 1. Enforce specific joker if it's a joker round
+        const hasJoker = currentRound.letters.includes('?');
+        if (hasJoker) {
+            // If joker not selected or wrong letter selected
+            if (!jokerValue || jokerValue !== currentRound.correctJoker) {
+                setAlertMessage(errorMsg);
+                setShowAlert(true);
+                setTimeout(() => setShowAlert(false), 3000);
+                setGuess('');
+                return;
+            }
+        }
+
+        // 2. Check if can be formed from letters (using effective letters with joker resolved)
         const effectiveLetters = getEffectiveLetters();
         if (!canFormWord(normalizedGuess, effectiveLetters)) {
-            setAlertMessage('Bu kelime verilen harflerden oluşturulamaz!');
+            setAlertMessage(errorMsg);
             setShowAlert(true);
-            setTimeout(() => setShowAlert(false), 2000);
+            setTimeout(() => setShowAlert(false), 3000);
             setGuess('');
             return;
         }
 
-        // Check if valid word in current round
+        // 3. Check if valid word in current round
         if (!isValidWord(normalizedGuess)) {
-            setAlertMessage('Bu kelime listede yok!');
+            setAlertMessage(errorMsg);
             setShowAlert(true);
-            setTimeout(() => setShowAlert(false), 2000);
+            setTimeout(() => setShowAlert(false), 3000);
             setGuess('');
             return;
         }
