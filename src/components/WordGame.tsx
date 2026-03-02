@@ -115,9 +115,6 @@ export function WordGame() {
         setCurrentRound(newRound);
         setGuess('');
         setFoundWords([]);
-        setTimeLeft(90);
-        setIsTimerActive(false);
-        setHasStarted(false);
         setJokerValue(null);
         setIsSelectingJoker(false);
         setJokerInput('');

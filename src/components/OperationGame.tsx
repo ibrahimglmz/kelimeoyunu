@@ -167,9 +167,6 @@ export function OperationGame() {
         setUsedIndices(new Set());
         setShowSuccess(false);
         setShowAlert(false);
-        setTimeLeft(120);
-        setIsTimerActive(false);
-        setHasStarted(false);
         setIsAnswered(false);
         setCurrentResult(null);
     };
