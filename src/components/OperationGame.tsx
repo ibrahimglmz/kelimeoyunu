@@ -169,6 +169,9 @@ export function OperationGame() {
         setShowAlert(false);
         setIsAnswered(false);
         setCurrentResult(null);
+        setHasStarted(false);
+        setIsTimerActive(false);
+        setTimeLeft(120);
     };
 
     const getDifferenceColor = () => {

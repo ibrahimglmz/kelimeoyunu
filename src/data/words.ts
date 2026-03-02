@@ -15,7 +15,7 @@ const WORD_ROUNDS: WordRound[] = [
     correctJoker: "B"
   },
   {
-    letters: ["M", "R", "K", "İ", "E", "E", "T", "?"],
+    letters: ["M", "R", "K", "İ", "E", "E", "T", "N", "?"],
     words: ["KERETİN", "MERTEK", "MERKEZ", "METRİK", "MİKTAR", "TEKMİL", "KERTME", "NETİCE", "TERİM", "TEKER", "METRE", "METİN", "İTMEK", "KEREM"],
     correctJoker: "N"
   },
@@ -35,7 +35,7 @@ const WORD_ROUNDS: WordRound[] = [
     correctJoker: "I"
   },
   {
-    letters: ["E", "İ", "A", "Ö", "S", "Ş", "Y", "?"],
+    letters: ["E", "İ", "A", "Ö", "S", "Ş", "Y", "I", "?"],
     words: ["SÖYLEŞME", "SÖYLEŞİ", "SÖYLEYİŞ", "SAYIŞMA", "SÖYLEŞ", "SÖYLEY", "SÖYLE", "SAYİŞ", "İŞLEY", "YAYIŞ", "SAYE", "YEİS", "ÖYLE", "EŞYA", "ŞASİ", "ŞİYE"],
     correctJoker: "M"
   },

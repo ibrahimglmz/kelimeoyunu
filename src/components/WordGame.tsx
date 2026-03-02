@@ -118,6 +118,9 @@ export function WordGame() {
         setJokerValue(null);
         setIsSelectingJoker(false);
         setJokerInput('');
+        setHasStarted(false);
+        setIsTimerActive(false);
+        setTimeLeft(90);
     };
 
     const handleSkipRound = () => {
