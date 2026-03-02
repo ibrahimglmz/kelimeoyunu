@@ -24,7 +24,8 @@ export function OperationGame() {
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
     const [timeLeft, setTimeLeft] = useState(120);
-    const [isTimerActive, setIsTimerActive] = useState(true);
+    const [isTimerActive, setIsTimerActive] = useState(false);
+    const [hasStarted, setHasStarted] = useState(false);
     const [isAnswered, setIsAnswered] = useState(false);
     const [currentResult, setCurrentResult] = useState<number | null>(null);
 
@@ -167,7 +168,8 @@ export function OperationGame() {
         setShowSuccess(false);
         setShowAlert(false);
         setTimeLeft(120);
-        setIsTimerActive(true);
+        setIsTimerActive(false);
+        setHasStarted(false);
         setIsAnswered(false);
         setCurrentResult(null);
     };
@@ -202,7 +204,7 @@ export function OperationGame() {
                         <span>{score}</span>
                     </motion.div>
 
-                    <div className={`inline-flex items-center gap-2 px-6 py-2 rounded-full font-bold text-lg shadow-lg ${timeLeft <= 10 ? 'bg-red-500 animate-pulse' : 'bg-purple-600'
+                    <div className={`inline-flex items-center gap-2 px-6 py-2 rounded-full font-bold text-lg shadow-lg ${!hasStarted ? 'bg-gray-600' : timeLeft <= 10 ? 'bg-red-500 animate-pulse' : 'bg-purple-600'
                         } text-white`}>
                         <Timer size={20} />
                         <span>{timeLeft}s</span>
@@ -227,136 +229,151 @@ export function OperationGame() {
                         </motion.p>
                     </div>
 
-                    {/* Target Number */}
-                    <div className="mb-4 text-center">
-                        <p className="text-gray-400 text-sm mb-2">HEDEF SAYI</p>
-                        <motion.p
-                            initial={{ scale: 0.9 }}
-                            animate={{ scale: 1 }}
-                            className="text-5xl sm:text-6xl font-bold text-purple-400 mb-2"
-                        >
-                            {puzzle.target}
-                        </motion.p>
-                    </div>
-
-                    <div className="mb-4">
-                        <p className="text-gray-400 text-sm mb-2 text-center">KULLANILACAK SAYILAR</p>
-                        <div className="flex flex-wrap justify-center gap-3">
-                            {puzzle.numbers.map((number, index) => (
-                                <motion.button
-                                    key={index}
-                                    initial={{ scale: 0 }}
-                                    animate={{ scale: 1 }}
-                                    transition={{ delay: index * 0.05 }}
-                                    onClick={() => handleNumberClick(number, index)}
-                                    disabled={usedIndices.has(index) || timeLeft === 0 || isAnswered}
-                                    className={`w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center rounded-xl text-2xl sm:text-3xl font-bold shadow-lg transition-all ${usedIndices.has(index)
-                                        ? 'bg-gray-600 text-gray-400 cursor-not-allowed opacity-50'
-                                        : 'bg-gradient-to-br from-purple-500 to-purple-700 text-white hover:scale-110 hover:shadow-xl cursor-pointer'
-                                        }`}
-                                >
-                                    {number}
-                                </motion.button>
-                            ))}
+                    {!hasStarted ? (
+                        <div className="flex justify-center items-center py-12">
+                            <button
+                                onClick={() => {
+                                    setHasStarted(true);
+                                    setIsTimerActive(true);
+                                }}
+                                className="bg-green-500 hover:bg-green-600 text-white px-8 py-4 rounded-xl font-bold text-xl shadow-lg transform transition hover:scale-105"
+                            >
+                                Turu Başlat
+                            </button>
                         </div>
-                    </div>
+                    ) : (
+                        <>
+                            {/* Target Number */}
+                            <div className="mb-4 text-center">
+                                <p className="text-gray-400 text-sm mb-2">HEDEF SAYI</p>
+                                <motion.p
+                                    initial={{ scale: 0.9 }}
+                                    animate={{ scale: 1 }}
+                                    className="text-5xl sm:text-6xl font-bold text-purple-400 mb-2"
+                                >
+                                    {puzzle.target}
+                                </motion.p>
+                            </div>
 
-                    {/* Expression Display */}
-                    <div className="mb-6">
-                        <div className="bg-gray-900 rounded-lg p-4 min-h-[80px] border-2 border-purple-500/30">
-                            <p className="text-gray-400 text-xs mb-2">İŞLEMİNİZ</p>
-                            <div className="flex flex-wrap gap-2 items-center">
-                                {expression ? (
-                                    expression.trim().split(' ').map((token, idx) => (
-                                        <motion.span
-                                            key={idx}
-                                            initial={{ scale: 0.8, opacity: 0 }}
-                                            animate={{ scale: 1, opacity: 1 }}
-                                            className={`px-3 py-1 rounded-lg text-xl font-bold ${['+', '-', '×', '÷'].includes(token)
-                                                ? 'bg-blue-600/30 text-blue-400 border border-blue-500/50'
-                                                : 'bg-purple-600/30 text-purple-400 border border-purple-500/50'
+                            <div className="mb-4">
+                                <p className="text-gray-400 text-sm mb-2 text-center">KULLANILACAK SAYILAR</p>
+                                <div className="flex flex-wrap justify-center gap-3">
+                                    {puzzle.numbers.map((number, index) => (
+                                        <motion.button
+                                            key={index}
+                                            initial={{ scale: 0 }}
+                                            animate={{ scale: 1 }}
+                                            transition={{ delay: index * 0.05 }}
+                                            onClick={() => handleNumberClick(number, index)}
+                                            disabled={usedIndices.has(index) || timeLeft === 0 || isAnswered}
+                                            className={`w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center rounded-xl text-2xl sm:text-3xl font-bold shadow-lg transition-all ${usedIndices.has(index)
+                                                ? 'bg-gray-600 text-gray-400 cursor-not-allowed opacity-50'
+                                                : 'bg-gradient-to-br from-purple-500 to-purple-700 text-white hover:scale-110 hover:shadow-xl cursor-pointer'
                                                 }`}
                                         >
-                                            {token}
-                                        </motion.span>
-                                    ))
-                                ) : (
-                                    <span className="text-gray-600">Sayıları ve işlemleri seçin...</span>
-                                )}
+                                            {number}
+                                        </motion.button>
+                                    ))}
+                                </div>
                             </div>
-                        </div>
-                    </div>
 
-                    {/* Current Result */}
-                    {currentResult !== null && (
-                        <motion.div
-                            initial={{ opacity: 0, y: -10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="mb-6 text-center"
-                        >
-                            <p className="text-gray-400 text-sm mb-1">SONUÇ</p>
-                            <p className={`text-4xl font-bold ${getDifferenceColor()}`}>
-                                {currentResult}
-                            </p>
-                            {currentResult !== puzzle.target && (
-                                <p className="text-gray-500 text-sm mt-1">
-                                    Fark: {Math.abs(currentResult - puzzle.target)}
-                                </p>
-                            )}
-                        </motion.div>
-                    )}
+                            {/* Expression Display */}
+                            <div className="mb-6">
+                                <div className="bg-gray-900 rounded-lg p-4 min-h-[80px] border-2 border-purple-500/30">
+                                    <p className="text-gray-400 text-xs mb-2">İŞLEMİNİZ</p>
+                                    <div className="flex flex-wrap gap-2 items-center">
+                                        {expression ? (
+                                            expression.trim().split(' ').map((token, idx) => (
+                                                <motion.span
+                                                    key={idx}
+                                                    initial={{ scale: 0.8, opacity: 0 }}
+                                                    animate={{ scale: 1, opacity: 1 }}
+                                                    className={`px-3 py-1 rounded-lg text-xl font-bold ${['+', '-', '×', '÷'].includes(token)
+                                                        ? 'bg-blue-600/30 text-blue-400 border border-blue-500/50'
+                                                        : 'bg-purple-600/30 text-purple-400 border border-purple-500/50'
+                                                        }`}
+                                                >
+                                                    {token}
+                                                </motion.span>
+                                            ))
+                                        ) : (
+                                            <span className="text-gray-600">Sayıları ve işlemleri seçin...</span>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
 
-                    {/* Operators */}
-                    <div className="mb-4">
-                        <p className="text-gray-400 text-sm mb-2 text-center">İŞLEMLER</p>
-                        <div className="flex flex-wrap justify-center gap-3">
-                            {['+', '-', '×', '÷'].map((op) => (
-                                <button
-                                    key={op}
-                                    onClick={() => handleOperatorClick(op)}
-                                    disabled={timeLeft === 0 || isAnswered}
-                                    className="w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white text-2xl font-bold rounded-lg shadow-lg transition-all hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
+                            {/* Current Result */}
+                            {currentResult !== null && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: -10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="mb-6 text-center"
                                 >
-                                    {op}
+                                    <p className="text-gray-400 text-sm mb-1">SONUÇ</p>
+                                    <p className={`text-4xl font-bold ${getDifferenceColor()}`}>
+                                        {currentResult}
+                                    </p>
+                                    {currentResult !== puzzle.target && (
+                                        <p className="text-gray-500 text-sm mt-1">
+                                            Fark: {Math.abs(currentResult - puzzle.target)}
+                                        </p>
+                                    )}
+                                </motion.div>
+                            )}
+
+                            {/* Operators */}
+                            <div className="mb-4">
+                                <p className="text-gray-400 text-sm mb-2 text-center">İŞLEMLER</p>
+                                <div className="flex flex-wrap justify-center gap-3">
+                                    {['+', '-', '×', '÷'].map((op) => (
+                                        <button
+                                            key={op}
+                                            onClick={() => handleOperatorClick(op)}
+                                            disabled={timeLeft === 0 || isAnswered}
+                                            className="w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white text-2xl font-bold rounded-lg shadow-lg transition-all hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        >
+                                            {op}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Controls */}
+                            <div className="flex flex-wrap gap-3 justify-center">
+                                <button
+                                    onClick={handleBackspace}
+                                    disabled={!expression || timeLeft === 0 || isAnswered}
+                                    className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-semibold shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                                >
+                                    <Delete size={18} />
+                                    Geri
                                 </button>
-                            ))}
-                        </div>
-                    </div>
+                                <button
+                                    onClick={handleClear}
+                                    disabled={!expression || timeLeft === 0 || isAnswered}
+                                    className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    Temizle
+                                </button>
 
-                    {/* Controls */}
-                    <div className="flex flex-wrap gap-3 justify-center">
-                        <button
-                            onClick={handleBackspace}
-                            disabled={!expression || timeLeft === 0 || isAnswered}
-                            className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-semibold shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                        >
-                            <Delete size={18} />
-                            Geri
-                        </button>
-                        <button
-                            onClick={handleClear}
-                            disabled={!expression || timeLeft === 0 || isAnswered}
-                            className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            Temizle
-                        </button>
+                                <GameButton
+                                    onClick={handleSubmit}
+                                    icon={Send}
+                                    label="Gönder"
+                                    variant="success"
+                                    disabled={!expression || timeLeft === 0 || isAnswered}
+                                />
+                                <GameButton
+                                    onClick={handleNewGame}
+                                    icon={RefreshCw}
+                                    label="Yeni Oyun"
+                                    variant="secondary"
+                                />
+                            </div>
 
-                        <GameButton
-                            onClick={handleSubmit}
-                            icon={Send}
-                            label="Gönder"
-                            variant="success"
-                            disabled={!expression || timeLeft === 0 || isAnswered}
-                        />
-                        <GameButton
-                            onClick={handleNewGame}
-                            icon={RefreshCw}
-                            label="Yeni Oyun"
-                            variant="secondary"
-                        />
-                    </div>
-
-
+                        </>
+                    )}
                 </motion.div>
 
                 <motion.div

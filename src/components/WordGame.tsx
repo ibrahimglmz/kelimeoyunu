@@ -19,7 +19,8 @@ export function WordGame() {
     const [alertMessage, setAlertMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const [timeLeft, setTimeLeft] = useState(90);
-    const [isTimerActive, setIsTimerActive] = useState(true);
+    const [isTimerActive, setIsTimerActive] = useState(false);
+    const [hasStarted, setHasStarted] = useState(false);
 
     // Joker state: map index of '?' to the user-selected char
     // The joker is identified by its value '?' in the currentRound.letters array
@@ -53,7 +54,7 @@ export function WordGame() {
     };
 
     const handleGuess = () => {
-        if (timeLeft === 0 || !guess.trim()) return;
+        if (!hasStarted || timeLeft === 0 || !guess.trim()) return;
 
         const normalizedGuess = guess.toLocaleUpperCase('tr-TR').trim();
         const errorMsg = 'Kelime listede bulunamadı lütfen doğru jokeri bulunuz';
@@ -115,7 +116,8 @@ export function WordGame() {
         setGuess('');
         setFoundWords([]);
         setTimeLeft(90);
-        setIsTimerActive(true);
+        setIsTimerActive(false);
+        setHasStarted(false);
         setJokerValue(null);
         setIsSelectingJoker(false);
         setJokerInput('');
@@ -167,7 +169,7 @@ export function WordGame() {
                         <span>{score}</span>
                     </motion.div>
 
-                    <div className={`inline-flex items-center gap-2 px-6 py-2 rounded-full font-bold text-lg shadow-lg ${timeLeft <= 10 ? 'bg-red-500 animate-pulse' : 'bg-blue-600'
+                    <div className={`inline-flex items-center gap-2 px-6 py-2 rounded-full font-bold text-lg shadow-lg ${!hasStarted ? 'bg-gray-600' : timeLeft <= 10 ? 'bg-red-500 animate-pulse' : 'bg-blue-600'
                         } text-white`}>
                         <Timer size={20} />
                         <span>{timeLeft}s</span>
@@ -195,33 +197,48 @@ export function WordGame() {
                     {/* Letters */}
                     <div className="mb-8 text-center">
                         <p className="text-gray-400 text-sm mb-4">HARFLER</p>
-                        <div className="flex flex-wrap justify-center gap-2 mb-2">
-                            {currentRound.letters.map((char, idx) => {
-                                const isJoker = char === '?';
-                                const displayChar = isJoker && jokerValue ? jokerValue : char;
-                                const isFilledJoker = isJoker && jokerValue;
+                        {!hasStarted ? (
+                            <div className="flex justify-center items-center py-4">
+                                <button
+                                    onClick={() => {
+                                        setHasStarted(true);
+                                        setIsTimerActive(true);
+                                        setTimeout(() => inputRef.current?.focus(), 100);
+                                    }}
+                                    className="bg-green-500 hover:bg-green-600 text-white px-8 py-4 rounded-xl font-bold text-xl shadow-lg transform transition hover:scale-105"
+                                >
+                                    Turu Başlat
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="flex flex-wrap justify-center gap-2 mb-2">
+                                {currentRound.letters.map((char, idx) => {
+                                    const isJoker = char === '?';
+                                    const displayChar = isJoker && jokerValue ? jokerValue : char;
+                                    const isFilledJoker = isJoker && jokerValue;
 
-                                return (
-                                    <motion.div
-                                        key={`${char}-${idx}`}
-                                        initial={{ scale: 0, rotate: -180 }}
-                                        animate={{
-                                            scale: 1,
-                                            rotate: 0,
-                                            backgroundColor: isFilledJoker ? '#10B981' : undefined // Green if filled joker
-                                        }}
-                                        transition={{ delay: idx * 0.05 }}
-                                        onClick={isJoker ? handleJokerClick : undefined}
-                                        className={`w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center rounded-xl text-2xl sm:text-3xl font-bold text-white shadow-lg border-2 border-blue-300 ${isJoker
-                                            ? 'cursor-pointer hover:scale-110 transition-transform bg-purple-600 border-purple-300'
-                                            : 'bg-gradient-to-br from-blue-500 to-blue-700'
-                                            } ${isFilledJoker ? 'bg-green-600 !border-green-300' : ''}`}
-                                    >
-                                        {displayChar}
-                                    </motion.div>
-                                )
-                            })}
-                        </div>
+                                    return (
+                                        <motion.div
+                                            key={`${char}-${idx}`}
+                                            initial={{ scale: 0, rotate: -180 }}
+                                            animate={{
+                                                scale: 1,
+                                                rotate: 0,
+                                                backgroundColor: isFilledJoker ? '#10B981' : undefined // Green if filled joker
+                                            }}
+                                            transition={{ delay: idx * 0.05 }}
+                                            onClick={isJoker ? handleJokerClick : undefined}
+                                            className={`w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center rounded-xl text-2xl sm:text-3xl font-bold text-white shadow-lg border-2 border-blue-300 ${isJoker
+                                                ? 'cursor-pointer hover:scale-110 transition-transform bg-purple-600 border-purple-300'
+                                                : 'bg-gradient-to-br from-blue-500 to-blue-700'
+                                                } ${isFilledJoker ? 'bg-green-600 !border-green-300' : ''}`}
+                                        >
+                                            {displayChar}
+                                        </motion.div>
+                                    )
+                                })}
+                            </div>
+                        )}
                         {isSelectingJoker && (
                             <div className="mt-4 flex justify-center items-center gap-2 animate-fadeIn">
                                 <input
@@ -281,7 +298,7 @@ export function WordGame() {
                                 value={guess}
                                 onChange={(e) => setGuess(e.target.value.toLocaleUpperCase('tr-TR'))}
                                 onKeyPress={(e) => e.key === 'Enter' && handleGuess()}
-                                disabled={timeLeft === 0}
+                                disabled={!hasStarted || timeLeft === 0}
                                 placeholder="Kelimeyi yazın..."
                                 className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-white placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all uppercase"
                             />
@@ -293,7 +310,7 @@ export function WordGame() {
                                 icon={Send}
                                 label="Gönder"
                                 variant="success"
-                                disabled={!guess.trim() || timeLeft === 0}
+                                disabled={!hasStarted || !guess.trim() || timeLeft === 0}
                             />
                             <GameButton
                                 onClick={handleSkipRound}
