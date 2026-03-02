@@ -5,59 +5,48 @@ import { Word } from '../types/game';
 export interface WordRound {
   letters: string[];
   words: string[];
-  correctJoker: string;
 }
 
 const WORD_ROUNDS: WordRound[] = [
   {
     letters: ["A", "K", "E", "L", "İ", "M", "O", "T", "?"],
     words: ["METABOLİK", "MELODİKA", "MELODİK", "METALİK", "KATOLİK", "AMELİYE", "MELODİ", "TEKİLA", "KALİTE", "MELİKE", "ETİMOL", "EMLAK", "METİL", "TEKİL", "KAMET", "MOTEL", "LOKMA"],
-    correctJoker: "B"
   },
   {
     letters: ["M", "R", "K", "İ", "E", "E", "T", "N", "?"],
     words: ["KERETİN", "MERTEK", "MERKEZ", "METRİK", "MİKTAR", "TEKMİL", "KERTME", "NETİCE", "TERİM", "TEKER", "METRE", "METİN", "İTMEK", "KEREM"],
-    correctJoker: "N"
   },
   {
     letters: ["A", "A", "L", "R", "T", "S", "M", "K", "?"],
     words: ["SARILMAK", "SARSILMA", "KARTALSI", "SARILMA", "KATILMA", "SARILIK", "REKLAMSI", "TASARIM", "SARMAK", "KARTAL", "REKLAM", "SARILI", "MASTAR", "TERMAL", "EMLAK", "RASAT", "ISLAK", "METAL", "TARIM", "KASIM", "KART", "ALMA", "SARI", "TERS", "MERT", "KISA"],
-    correctJoker: "I"
   },
   {
     letters: ["A", "E", "I", "N", "R", "P", "T", "Ş", "?"],
     words: ["ARAŞTIRI", "PIRLANTA", "YAPIŞAN", "TANIŞMA", "ARAŞTIR", "PANTER", "ŞARTLI", "PAŞİNA", "ARŞIN", "NASIR", "RATIP", "RANT", "ARŞI", "ATIŞ", "PARE", "ŞART"],
-    correctJoker: "L"
   },
   {
     letters: ["U", "O", "N", "K", "L", "T", "R", "S", "?"],
     words: ["KORSANLIK", "SOLUNMAK", "KONTUAR", "SOKRATİK", "KORUNAK", "SOKULMA", "KUTLAMA", "KORUNMA", "KORSAN", "KONTUR", "KUTSAL", "SOLAK", "KONUT", "SOLUK", "SORUN", "TORUN", "SOKRA", "SONLU", "KURS", "STOK", "ONLU", "KORU", "SORT", "ROTA"],
-    correctJoker: "I"
   },
   {
-    letters: ["E", "İ", "A", "Ö", "S", "Ş", "Y", "I", "?"],
+    letters: ["E", "İ", "A", "Ö", "S", "Ş", "Y", "L", "?"],
     words: ["SÖYLEŞME", "SÖYLEŞİ", "SÖYLEYİŞ", "SAYIŞMA", "SÖYLEŞ", "SÖYLEY", "SÖYLE", "SAYİŞ", "İŞLEY", "YAYIŞ", "SAYE", "YEİS", "ÖYLE", "EŞYA", "ŞASİ", "ŞİYE"],
-    correctJoker: "M"
   },
   {
     letters: ["D", "E", "M", "F", "T", "E", "R", "İ", "?"],
     words: ["DEFTERİMİ", "DEFTERLER", "DEFTERİM", "DEFTERİ", "DEMETLİ", "ERİTMEK", "FERDİYE", "DEFTER", "METRİS", "METRİK", "ERİTME", "TERFİ", "DEMET", "TERFİ", "FERDİ", "METRE", "TERİM", "METİN", "LİDER", "DERME"],
-    correctJoker: "İ"
   },
   {
     letters: ["O", "K", "İ", "L", "U", "D", "A", "R", "?"],
     words: ["OKULLARDA", "OKURLAR", "DORUKLA", "ORDULUK", "KADROLU", "ODAKLAR", "KORUDAN", "KORDAL", "DUALIK", "DARLIK", "DORUK", "KADRO", "DOLAR", "KURAL", "KADİR", "ODALI", "RADYO", "DURAK"],
-    correctJoker: "L"
   },
   {
     letters: ["M", "E", "N", "R", "V", "E", "D", "İ", "?"],
-    words: ["MERDİVENLİ", "MERDİVENCİ", "VERİMLENME", "MERDİVEN", "DEVİRMEN", "DEVİRME", "ERDEMNİ", "EVİRMEK", "NEDİM", "MİNDERE", "ERDİRME", "MEDENİ", "MİNDER", "DERİME", "NEDİME", "VERİME", "MENDİL", "ERDEM", "DENİM", "DEVİR", "EVRİM", "VEREM", "DERİN", "ENDER"],
-    correctJoker: "İ"
+    words: ["MERDİVENLİ", "MERDİVENLİ", "MERDİVENCİ", "VERİMLENME", "MERDİVEN", "DEVİRMEN", "DEVİRME", "ERDEMNİ", "EVİRMEK", "NEDİM", "MİNDERE", "ERDİRME", "MEDENİ", "MİNDER", "DERİME", "NEDİME", "VERİME", "MENDİL", "ERDEM", "DENİM", "DEVİR", "EVRİM", "VEREM", "DERİN", "ENDER"],
   },
   {
     letters: ["T", "O", "C", "L", "A", "R", "P", "A", "?"],
     words: ["TOPARLACIK", "TOPARLAMA", "TOPARLAKÇA", "TOPARLA", "APORTTA", "TOPLAMA", "PAROLA", "TOPRAK", "PAÇALI", "TORLAK", "TOPAL", "APORT", "TOPLA", "POLAR", "PLATO", "ÇALAP", "TOPAÇ"],
-    correctJoker: "I"
   },
 ];
 
@@ -69,7 +58,6 @@ export interface WordRoundData {
   roundNumber: number;
   letters: string[];
   availableWords: string[];
-  correctJoker: string;
 }
 
 /**
@@ -81,7 +69,6 @@ export function getCurrentWordRound(): WordRoundData {
     roundNumber: currentRoundIndex + 1,
     letters: [...round.letters],
     availableWords: [...round.words],
-    correctJoker: round.correctJoker
   };
 }
 

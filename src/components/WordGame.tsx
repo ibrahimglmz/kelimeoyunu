@@ -22,12 +22,6 @@ export function WordGame() {
     const [isTimerActive, setIsTimerActive] = useState(false);
     const [hasStarted, setHasStarted] = useState(false);
 
-    // Joker state: map index of '?' to the user-selected char
-    // The joker is identified by its value '?' in the currentRound.letters array
-    const [jokerValue, setJokerValue] = useState<string | null>(null);
-    const [isSelectingJoker, setIsSelectingJoker] = useState(false);
-    const [jokerInput, setJokerInput] = useState('');
-
     // Background music - playing when timer is active
     useGameSound('/sounds/game-music.mp3', isTimerActive, 0.4);
     // Timer sound
@@ -49,15 +43,11 @@ export function WordGame() {
         return () => clearInterval(interval);
     }, [isTimerActive, timeLeft, foundWords.length]);
 
-    const getEffectiveLetters = () => {
-        return currentRound.letters.map(l => l === '?' && jokerValue ? jokerValue : l);
-    };
-
     const handleGuess = () => {
         if (!hasStarted || timeLeft === 0 || !guess.trim()) return;
 
         const normalizedGuess = guess.toLocaleUpperCase('tr-TR').trim();
-        const errorMsg = 'Kelime listede bulunamadı lütfen doğru jokeri bulunuz';
+        const errorMsg = 'Kelime listede bulunamadı!';
 
         // Check if already found
         if (foundWords.includes(normalizedGuess)) {
@@ -68,22 +58,8 @@ export function WordGame() {
             return;
         }
 
-        // 1. Enforce specific joker if it's a joker round
-        const hasJoker = currentRound.letters.includes('?');
-        if (hasJoker) {
-            // If joker not selected or wrong letter selected
-            if (!jokerValue || jokerValue !== currentRound.correctJoker) {
-                setAlertMessage(errorMsg);
-                setShowAlert(true);
-                setTimeout(() => setShowAlert(false), 3000);
-                setGuess('');
-                return;
-            }
-        }
-
-        // 2. Check if can be formed from letters (using effective letters with joker resolved)
-        const effectiveLetters = getEffectiveLetters();
-        if (!canFormWord(normalizedGuess, effectiveLetters)) {
+        // 1. Check if can be formed from letters
+        if (!canFormWord(normalizedGuess, currentRound.letters)) {
             setAlertMessage(errorMsg);
             setShowAlert(true);
             setTimeout(() => setShowAlert(false), 3000);
@@ -91,7 +67,7 @@ export function WordGame() {
             return;
         }
 
-        // 3. Check if valid word in current round
+        // 2. Check if valid word in current round
         if (!isValidWord(normalizedGuess)) {
             setAlertMessage(errorMsg);
             setShowAlert(true);
@@ -115,9 +91,6 @@ export function WordGame() {
         setCurrentRound(newRound);
         setGuess('');
         setFoundWords([]);
-        setJokerValue(null);
-        setIsSelectingJoker(false);
-        setJokerInput('');
         setHasStarted(false);
         setIsTimerActive(false);
         setTimeLeft(90);
@@ -130,22 +103,6 @@ export function WordGame() {
             setShowAlert(false);
             handleNextRound();
         }, 2000);
-    };
-
-    const handleJokerClick = () => {
-        setIsSelectingJoker(true);
-    };
-
-    const confirmJokerSelection = () => {
-        if (jokerInput && jokerInput.length === 1) {
-            setJokerValue(jokerInput.toLocaleUpperCase('tr-TR'));
-            setIsSelectingJoker(false);
-            setJokerInput('');
-            // Focus back to input after small delay to allow UI to update
-            setTimeout(() => {
-                inputRef.current?.focus();
-            }, 100);
-        }
     };
 
     return (
@@ -214,8 +171,6 @@ export function WordGame() {
                             <div className="flex flex-wrap justify-center gap-2 mb-2">
                                 {currentRound.letters.map((char, idx) => {
                                     const isJoker = char === '?';
-                                    const displayChar = isJoker && jokerValue ? jokerValue : char;
-                                    const isFilledJoker = isJoker && jokerValue;
 
                                     return (
                                         <motion.div
@@ -224,44 +179,17 @@ export function WordGame() {
                                             animate={{
                                                 scale: 1,
                                                 rotate: 0,
-                                                backgroundColor: isFilledJoker ? '#10B981' : undefined // Green if filled joker
                                             }}
                                             transition={{ delay: idx * 0.05 }}
-                                            onClick={isJoker ? handleJokerClick : undefined}
                                             className={`w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center rounded-xl text-2xl sm:text-3xl font-bold text-white shadow-lg border-2 border-blue-300 ${isJoker
-                                                ? 'cursor-pointer hover:scale-110 transition-transform bg-purple-600 border-purple-300'
+                                                ? 'bg-purple-600 border-purple-300'
                                                 : 'bg-gradient-to-br from-blue-500 to-blue-700'
-                                                } ${isFilledJoker ? 'bg-green-600 !border-green-300' : ''}`}
+                                                }`}
                                         >
-                                            {displayChar}
+                                            {char}
                                         </motion.div>
                                     )
                                 })}
-                            </div>
-                        )}
-                        {isSelectingJoker && (
-                            <div className="mt-4 flex justify-center items-center gap-2 animate-fadeIn">
-                                <input
-                                    autoFocus
-                                    className="w-16 h-10 rounded text-center text-black font-bold uppercase"
-                                    maxLength={1}
-                                    placeholder="?"
-                                    value={jokerInput}
-                                    onChange={(e) => setJokerInput(e.target.value.toLocaleUpperCase('tr-TR'))}
-                                    onKeyDown={(e) => e.key === 'Enter' && confirmJokerSelection()}
-                                />
-                                <button
-                                    onClick={confirmJokerSelection}
-                                    className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded font-bold"
-                                >
-                                    Seç
-                                </button>
-                                <button
-                                    onClick={() => setIsSelectingJoker(false)}
-                                    className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded font-bold"
-                                >
-                                    İptal
-                                </button>
                             </div>
                         )}
                     </div>
