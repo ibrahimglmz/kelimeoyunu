@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Video as LucideIcon } from 'lucide-react';
+import { LucideIcon } from 'lucide-react';
 
 interface GameButtonProps {
   onClick: () => void;

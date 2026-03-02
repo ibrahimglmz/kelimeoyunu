@@ -20,22 +20,22 @@ const WORD_ROUNDS: WordRound[] = [
     correctJoker: "N"
   },
   {
-    letters: ["A", "A", "L", "R", "T", "S", "M", "K", "I", "?"],
+    letters: ["A", "A", "L", "R", "T", "S", "M", "K", "?"],
     words: ["SARILMAK", "SARSILMA", "KARTALSI", "SARILMA", "KATILMA", "SARILIK", "REKLAMSI", "TASARIM", "SARMAK", "KARTAL", "REKLAM", "SARILI", "MASTAR", "TERMAL", "EMLAK", "RASAT", "ISLAK", "METAL", "TARIM", "KASIM", "KART", "ALMA", "SARI", "TERS", "MERT", "KISA"],
     correctJoker: "I"
   },
   {
-    letters: ["A", "A", "I", "N", "R", "P", "T", "Ş", "?"],
+    letters: ["A", "E", "I", "N", "R", "P", "T", "Ş", "?"],
     words: ["ARAŞTIRI", "PIRLANTA", "YAPIŞAN", "TANIŞMA", "ARAŞTIR", "PANTER", "ŞARTLI", "PAŞİNA", "ARŞIN", "NASIR", "RATIP", "RANT", "ARŞI", "ATIŞ", "PARE", "ŞART"],
     correctJoker: "L"
   },
   {
-    letters: ["A", "O", "N", "K", "L", "S", "R", "U", "?"],
+    letters: ["U", "O", "N", "K", "L", "T", "R", "S", "?"],
     words: ["KORSANLIK", "SOLUNMAK", "KONTUAR", "SOKRATİK", "KORUNAK", "SOKULMA", "KUTLAMA", "KORUNMA", "KORSAN", "KONTUR", "KUTSAL", "SOLAK", "KONUT", "SOLUK", "SORUN", "TORUN", "SOKRA", "SONLU", "KURS", "STOK", "ONLU", "KORU", "SORT", "ROTA"],
     correctJoker: "I"
   },
   {
-    letters: ["E", "E", "İ", "A", "Ö", "S", "Ş", "Y", "L", "?"],
+    letters: ["E", "İ", "A", "Ö", "S", "Ş", "Y", "?"],
     words: ["SÖYLEŞME", "SÖYLEŞİ", "SÖYLEYİŞ", "SAYIŞMA", "SÖYLEŞ", "SÖYLEY", "SÖYLE", "SAYİŞ", "İŞLEY", "YAYIŞ", "SAYE", "YEİS", "ÖYLE", "EŞYA", "ŞASİ", "ŞİYE"],
     correctJoker: "M"
   },
@@ -45,17 +45,17 @@ const WORD_ROUNDS: WordRound[] = [
     correctJoker: "İ"
   },
   {
-    letters: ["O", "K", "İ", "L", "U", "D", "A", "R", "A", "?"],
+    letters: ["O", "K", "İ", "L", "U", "D", "A", "R", "?"],
     words: ["OKULLARDA", "OKURLAR", "DORUKLA", "ORDULUK", "KADROLU", "ODAKLAR", "KORUDAN", "KORDAL", "DUALIK", "DARLIK", "DORUK", "KADRO", "DOLAR", "KURAL", "KADİR", "ODALI", "RADYO", "DURAK"],
     correctJoker: "L"
   },
   {
-    letters: ["M", "E", "R", "D", "İ", "V", "E", "N", "L", "?"],
+    letters: ["M", "E", "N", "R", "V", "E", "D", "İ", "?"],
     words: ["MERDİVENLİ", "MERDİVENCİ", "VERİMLENME", "MERDİVEN", "DEVİRMEN", "DEVİRME", "ERDEMNİ", "EVİRMEK", "NEDİM", "MİNDERE", "ERDİRME", "MEDENİ", "MİNDER", "DERİME", "NEDİME", "VERİME", "MENDİL", "ERDEM", "DENİM", "DEVİR", "EVRİM", "VEREM", "DERİN", "ENDER"],
     correctJoker: "İ"
   },
   {
-    letters: ["T", "O", "P", "A", "R", "L", "A", "C", "K", "?"],
+    letters: ["T", "O", "C", "L", "A", "R", "P", "A", "?"],
     words: ["TOPARLACIK", "TOPARLAMA", "TOPARLAKÇA", "TOPARLA", "APORTTA", "TOPLAMA", "PAROLA", "TOPRAK", "PAÇALI", "TORLAK", "TOPAL", "APORT", "TOPLA", "POLAR", "PLATO", "ÇALAP", "TOPAÇ"],
     correctJoker: "I"
   },
