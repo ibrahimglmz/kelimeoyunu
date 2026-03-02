@@ -9,43 +9,43 @@ export interface WordRound {
 
 const WORD_ROUNDS: WordRound[] = [
   {
-    letters: ["M", "E", "T", "A", "B", "O", "L", "İ", "K", "D", "Y", "E", "S", "?"],
+    letters: ["A", "K", "E", "L", "İ", "M", "O", "T", "B", "Y", "E", "?"],
     words: ["METABOLİK", "MELODİKA", "MELODİK", "METALİK", "KATOLİK", "AMELİYE", "MELODİ", "TEKİLA", "KALİTE", "MELİKE", "ETİMOL", "EMLAK", "METİL", "TEKİL", "KAMET", "MOTEL", "LOKMA"]
   },
   {
-    letters: ["K", "E", "R", "E", "T", "İ", "N", "M", "Z", "A", "L", "C", "D", "?"],
+    letters: ["M", "R", "K", "İ", "E", "E", "T", "N", "Z", "C", "?"],
     words: ["KERETİN", "MERTEK", "MERKEZ", "METRİK", "MİKTAR", "TEKMİL", "KERTME", "NETİCE", "TERİM", "TEKER", "METRE", "METİN", "İTMEK", "KEREM"]
   },
   {
-    letters: ["S", "A", "R", "I", "L", "M", "A", "K", "T", "E", "İ", "R", "P", "?"],
+    letters: ["A", "A", "L", "R", "T", "S", "M", "K", "I", "?"],
     words: ["SARILMAK", "SARSILMA", "KARTALSI", "SARILMA", "KATILMA", "SARILIK", "REKLAMSI", "TASARIM", "SARMAK", "KARTAL", "REKLAM", "SARILI", "MASTAR", "TERMAL", "EMLAK", "RASAT", "ISLAK", "METAL", "TARIM", "KASIM", "KART", "ALMA", "SARI", "TERS", "MERT", "KISA"]
   },
   {
-    letters: ["A", "R", "A", "Ş", "T", "I", "R", "I", "P", "L", "N", "E", "Y", "?"],
+    letters: ["A", "E", "I", "N", "R", "P", "T", "Ş", "I", "L", "A", "R", "Y", "M", "?"],
     words: ["ARAŞTIRI", "PIRLANTA", "YAPIŞAN", "TANIŞMA", "ARAŞTIR", "PANTER", "ŞARTLI", "PAŞİNA", "ARŞIN", "NASIR", "RATIP", "RANT", "ARŞI", "ATIŞ", "PARE", "ŞART"]
   },
   {
-    letters: ["K", "O", "R", "S", "A", "N", "L", "I", "T", "U", "M", "E", "G", "?"],
+    letters: ["U", "O", "N", "K", "L", "T", "R", "S", "A", "I", "M", "?"],
     words: ["KORSANLIK", "SOLUNMAK", "KONTUAR", "SOKRATİK", "KORUNAK", "SOKULMA", "KUTLAMA", "KORUNMA", "KORSAN", "KONTUR", "KUTSAL", "SOLAK", "KONUT", "SOLUK", "SORUN", "TORUN", "SOKRA", "SONLU", "KURS", "STOK", "ONLU", "KORU", "SORT", "ROTA"]
   },
   {
-    letters: ["S", "Ö", "Y", "L", "E", "Ş", "M", "İ", "A", "I", "Y", "Ü", "Ç", "?"],
+    letters: ["E", "İ", "A", "Ö", "S", "Ş", "Y", "L", "M", "?"],
     words: ["SÖYLEŞME", "SÖYLEŞİ", "SÖYLEYİŞ", "SAYIŞMA", "SÖYLEŞ", "SÖYLEY", "SÖYLE", "SAYİŞ", "İŞLEY", "YAYIŞ", "SAYE", "YEİS", "ÖYLE", "EŞYA", "ŞASİ", "ŞİYE"]
   },
   {
-    letters: ["D", "E", "F", "T", "E", "R", "İ", "M", "İ", "L", "A", "Y", "S", "R", "?"],
+    letters: ["D", "E", "M", "F", "T", "E", "R", "İ", "L", "R", "E", "?"],
     words: ["DEFTERİMİ", "DEFTERLER", "DEFTERİM", "DEFTERİ", "DEMETLİ", "ERİTMEK", "FERDİYE", "DEFTER", "METRİS", "METRİK", "ERİTME", "TERFİ", "DEMET", "TERFİ", "FERDİ", "METRE", "TERİM", "METİN", "LİDER", "DERME"]
   },
   {
-    letters: ["O", "K", "U", "L", "L", "A", "R", "D", "A", "I", "Y", "E", "B", "?"],
+    letters: ["O", "K", "İ", "L", "U", "D", "A", "R", "L", "?"],
     words: ["OKULLARDA", "OKURLAR", "DORUKLA", "ORDULUK", "KADROLU", "ODAKLAR", "KORUDAN", "KORDAL", "DUALIK", "DARLIK", "DORUK", "KADRO", "DOLAR", "KURAL", "KADİR", "ODALI", "RADYO", "DURAK"]
   },
   {
-    letters: ["M", "E", "R", "D", "İ", "V", "E", "N", "L", "İ", "C", "A", "H", "E", "M", "?"],
+    letters: ["M", "E", "N", "R", "V", "E", "D", "İ", "L", "C", "M", "E", "?"],
     words: ["MERDİVENLİ", "MERDİVENCİ", "VERİMLENME", "MERDİVEN", "DEVİRMEN", "DEVİRME", "ERDEMNİ", "EVİRMEK", "NEDİM", "MİNDERE", "ERDİRME", "MEDENİ", "MİNDER", "DERİME", "NEDİME", "VERİME", "MENDİL", "ERDEM", "DENİM", "DEVİR", "EVRİM", "VEREM", "DERİN", "ENDER"]
   },
   {
-    letters: ["T", "O", "P", "A", "R", "L", "A", "C", "I", "K", "M", "Ç", "A", "?"],
+    letters: ["T", "O", "C", "L", "A", "R", "P", "A", "K", "I", "M", "?"],
     words: ["TOPARLACIK", "TOPARLAMA", "TOPARLAKÇA", "TOPARLA", "APORTTA", "TOPLAMA", "PAROLA", "TOPRAK", "PAÇALI", "TORLAK", "TOPAL", "APORT", "TOPLA", "POLAR", "PLATO", "ÇALAP", "TOPAÇ"]
   },
 ];
